@@ -33,15 +33,25 @@
 # define ESC 27
 # define ALTRTH 26139
 # define ALTLFT 25115
+# define HOME 4741915
+# define DEEP 4610843
 
 typedef struct		s_init
 {
 	int				k;
 	int				r;
 	char			*str;
+	char			c[2];
 	char			*tmp;
 }					t_init;
 
+typedef struct		s_node
+{
+	int				index;
+	char			*content;
+	struct s_node   *next;
+	struct s_node   *prev;
+}					t_node;
 
 typedef struct		s_line
 {
@@ -51,3 +61,12 @@ typedef struct		s_line
 	int				cursor;
 	int				cursor_origne;
 }					t_line;
+
+void        ft_stock(char *str,t_node **list);
+int			ft_output(int str);
+void		cur_goto(t_line *line, int cursor);
+void		ft_alt_rth(char *str,t_line *line, int *cursor);
+void		ft_alt_lft(char *str,t_line *line, int *cursor);
+void    ft_clearline(char *str,int cursor,t_line *line);
+void    ft_printnbl(char **str,t_line *line, t_init *init,int *cursor);
+void	ft_delet(char **str,t_line *line, int *cursor);

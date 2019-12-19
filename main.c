@@ -12,7 +12,7 @@
 
  #include "ft_select.h"
 
-int output(int str)
+int ft_output(int str)
 {
 	ft_putchar(str);
 	return (0);
@@ -26,7 +26,7 @@ void cur_goto(t_line *line, int cursor)
     li = cursor / line->col;
     co = cursor % line->col;
     line->cursor = cursor;
-    tputs(tgoto(tgetstr("cm", 0), co, li), 0, output);
+    tputs(tgoto(tgetstr("cm", 0), co, li), 0, ft_output);
 }
 
 void get_cursor_position(t_line *line)
@@ -56,56 +56,45 @@ void	ft_init(t_line *line)
 	if (tcsetattr(0, 0, &config) < 0)
 		ft_putstr_fd("error", 0);
 	tgetent(buf, getenv("TERM"));
-	tputs(tgetstr("ti", 0), 0, output);
+	tputs(tgetstr("ti", 0), 0, ft_output);
     ioctl(0, TIOCGWINSZ, &w);
 	line->col = w.ws_col;
 	line->row = w.ws_row;
 }
 
-void ft_print(char **str,char *c,int cursor)
-{
-	char *aff;
-	char *pp;
-	char *dd;
 
-	aff = ft_strsub(*str,0,cursor);
-	pp = ft_strsub(*str,cursor,ft_strlen(*str) - cursor);
-	ft_strdel(str);
-	dd = ft_strjoin(aff,c);
-	*str = ft_strjoin(dd,pp);
-	ft_strdel(&dd);
-	ft_strdel(&pp);
-	ft_strdel(&aff);
-}
-
-void ft_kdel(char **str, int cursor)
-{
-	char *aff = ft_strsub(*str,0,cursor - 1);
-    char *pp = ft_strsub(*str,cursor,ft_strlen(*str) - cursor + 1);
-	ft_strdel(str);
-    *str = ft_strjoin(aff,pp);  
-}
+// void ft_kdel(char **str, int cursor)
+// {
+// 	char *aff = ft_strsub(*str,0,cursor - 1);
+//     char *pp = ft_strsub(*str,cursor,ft_strlen(*str) - cursor + 1);
+// 	ft_strdel(str);
+//     *str = ft_strjoin(aff,pp);
+// }
 
 int main()
 {
 	t_init init;
 	t_line line;
 	struct termios config;
+	t_node *list;
+	if (!(list = ft_memalloc(sizeof(t_node))))
+            return (0);
 	int cursor;
 	line.len = 0;
 	cursor = 0;
 	init.k = 1;
 	char *str;
 	str = NULL;
-	char c[2];
 	ft_init(&line);
 	while (1)
 	{
 		if (init.k == 1)
 		{
-			// tputs(tgoto(tgetstr("cm", 0), 0, 0), 0, output);
-			// ft_putstr_fd("->",2);
-			tputs(tgoto(tgetstr("cm", 0), 0, 0), 0, output);
+			// tputs(tgoto(tgetstr("cm", 0), 0, 0), 0, ft_output);
+			// ft_putstr_fd("->\n",2);
+			line.cursor = 0;
+			tputs(tgoto(tgetstr("cm", 0), line.cursor, 0), 0, ft_output);
+			get_cursor_position(&line);
 			init.k = -1;
 		}
 		init.r = 0;
@@ -114,8 +103,8 @@ int main()
 			if (init.r == ESC)
 			{
 				config.c_lflag |= (ECHO | ICANON);
-				tputs(tgetstr("te", 0), 0, output);
-				tputs(tgetstr("me", 0), 0, output);
+				tputs(tgetstr("te", 0), 0, ft_output);
+				tputs(tgetstr("me", 0), 0, ft_output);
 				exit(1);
 			}
 			else if (init.r == LEFT)
@@ -135,54 +124,45 @@ int main()
 				}
 			}
 			else if (init.r == DEL)
+				ft_delet(&str,&line, &cursor);
+			else if (init.r == HOME)
 			{
-				if (cursor > 0 && line.len > 0)
+				cursor = line.cursor_origne;
+				cur_goto(&line,cursor);
+			}
+			else if (init.r == DEEP)
+			{
+				cursor = line.len;
+				cur_goto(&line,cursor);
+			}
+			// else if (init.r == END)
+			// {
+			// 	ft_stock(str, &list);
+			// 	line.col +=1;
+			// 	get_cursor_position(&line);
+			// }
+			else if (init.r == UP)
+			{
+				if (list->next)
 				{
-					ft_kdel(&str, cursor);
-					tputs(tgoto(tgetstr("cm", 0), 0, 0), 0, output);
-					tputs(tgetstr("cd", 0), 0, output);
-					ft_putstr(str);
-					cursor--;
-					line.len--;
-					cur_goto(&line,cursor);
+					list = list->next;
+					ft_putendl(list->content);
 				}
 			}
-			else if (init.r == ALTRTH && cursor < line.len)
+			else if (init.r == DOWN)
 			{
-					while (str[cursor])
-					{
-							if (!ft_isalnum(str[cursor]))
-									break;
-							cursor++;
-					}
-					while (str[cursor])
-					{
-							if (ft_isalnum(str[cursor]))
-									break;
-							cursor++;
-					}
-					tputs(tgoto(tgetstr("cm", 0), 0, 0), 0, output);
-					tputs(tgetstr("cd", 0), 0, output);
-					ft_putstr(str);
-					cur_goto(&line,cursor); 
+				if (list->prev)
+				{
+					list = list->prev;
+					ft_putendl(list->content);
+				}
 			}
+			else if (init.r == ALTRTH)
+				ft_alt_rth(str, &line, &cursor);
+			else if (init.r == ALTLFT)
+				ft_alt_lft(str, &line, &cursor);
 			else
-			{
-				if (ft_isprint(init.r))
-				{
-					c[1] ='\0';
-					c[0] = init.r;
-					if (!str)
-						str = ft_strdup("\0");
-					ft_print(&str,c,cursor);
-					cursor++;
-					line.len++;
-					tputs(tgoto(tgetstr("cm", 0), 0, 0), 0, output);
-					tputs(tgetstr("cd", 0), 0, output);
-					ft_putstr(str);
-					cur_goto(&line,cursor);
-				}
-			}
+				ft_printnbl(&str,&line,&init,&cursor);
 		}
 	}
 	return (0);

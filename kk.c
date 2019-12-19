@@ -12,23 +12,19 @@
 
 #include "ft_select.h"
 
-int     main(int ac,char **av)
+void	ft_lsttoadd(t_node **alst, t_node *new)
 {
-        char *str;
-        int i = 0;
-        str = "012   3456 567 89";
-           
-        while (str[i])
-        {
-                if (!ft_isalnum(str[i]))
-                        break;
-                i++;
-        }
-        while (str[i])
-        {
-                if (ft_isalnum(str[i]))
-                        break;
-                i++;
-        }
-        ft_putnbr(i);                                                                                                                      
+    (*alst)->prev = new;
+	new->next = *alst;
+	new->prev = NULL;
+    *alst = new;
 }
+
+void        ft_stock(char *str,t_node **list)
+{
+    t_node *new;
+
+    new = ft_memalloc(sizeof(t_node));
+    new->content = ft_strdup(str);
+    ft_lsttoadd(list, new);
+} 

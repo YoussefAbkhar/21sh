@@ -14,7 +14,7 @@ NAME = 21sh
 
 CFLAGS = -g -Wall -Werror -Wextra
 
-SRCS = main.c
+SRCS = main.c kk.c keys_alt.c
 
 LIBFT = libft/libft.a
 
