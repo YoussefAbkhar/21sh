@@ -56,7 +56,6 @@ void	ft_init(t_line *line)
 	if (tcsetattr(0, 0, &config) < 0)
 		ft_putstr_fd("error", 0);
 	tgetent(buf, getenv("TERM"));
-	tputs(tgetstr("ti", 0), 0, ft_output);
     ioctl(0, TIOCGWINSZ, &w);
 	line->col = w.ws_col;
 	line->row = w.ws_row;
@@ -90,11 +89,10 @@ int main()
 	{
 		if (init.k == 1)
 		{
-			// tputs(tgoto(tgetstr("cm", 0), 0, 0), 0, ft_output);
-			// ft_putstr_fd("->\n",2);
-			line.cursor = 0;
-			tputs(tgoto(tgetstr("cm", 0), line.cursor, 0), 0, ft_output);
+			ft_putstr("->");
 			get_cursor_position(&line);
+			cur_goto(&line,line.cursor);
+			cursor = line.cursor;
 			init.k = -1;
 		}
 		init.r = 0;
@@ -103,13 +101,12 @@ int main()
 			if (init.r == ESC)
 			{
 				config.c_lflag |= (ECHO | ICANON);
-				tputs(tgetstr("te", 0), 0, ft_output);
 				tputs(tgetstr("me", 0), 0, ft_output);
 				exit(1);
 			}
 			else if (init.r == LEFT)
 			{
-				if (cursor > 0)
+				if (cursor > line.cursor_origne)
 				{
 					cursor--;
 					cur_goto(&line,cursor);
@@ -117,7 +114,7 @@ int main()
 			}
 			else if (init.r == RIGHT)
 			{
-				if (cursor < line.len)
+				if (cursor < (line.cursor_origne + line.len))
 				{
 					cursor++;
 					cur_goto(&line,cursor);
@@ -132,15 +129,15 @@ int main()
 			}
 			else if (init.r == DEEP)
 			{
-				cursor = line.len;
+				cursor = line.cursor_origne + line.len;
 				cur_goto(&line,cursor);
 			}
-			// else if (init.r == END)
-			// {
-			// 	ft_stock(str, &list);
-			// 	line.col +=1;
-			// 	get_cursor_position(&line);
-			// }
+			else if (init.r == END)
+			{
+				ft_stock(str, &list);
+				line.col +=1;
+				get_cursor_position(&line);
+			}
 			else if (init.r == UP)
 			{
 				if (list->next)
