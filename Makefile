@@ -14,7 +14,7 @@ NAME = 21sh
 
 CFLAGS = -g -Wall -Werror -Wextra
 
-SRCS = main.c kk.c keys_alt.c
+SRCS = main.c kk.c keys_alt.c history.c
 
 LIBFT = libft/libft.a
 
@@ -24,7 +24,7 @@ OBJ = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-$(NAME):$(OBJ)
+$(NAME):$(OBJ) ft_select.h
 	@make -C libft
 	@$(CC) -g $(CFLAGS) $(OBJ) $(LIBFT) -ltermcap -o $(NAME)
 	@echo "\033[32m$(NAME) created\n\033[0m"

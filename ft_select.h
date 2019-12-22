@@ -48,6 +48,7 @@ typedef struct		s_init
 typedef struct		s_node
 {
 	int				index;
+	int				len;
 	char			*content;
 	struct s_node   *next;
 	struct s_node   *prev;
@@ -62,11 +63,13 @@ typedef struct		s_line
 	int				cursor_origne;
 }					t_line;
 
-void        ft_stock(char *str,t_node **list);
+void        ft_stock(char *str,t_node **list, int len);
 int			ft_output(int str);
 void		cur_goto(t_line *line, int cursor);
 void		ft_alt_rth(char *str,t_line *line, int *cursor);
 void		ft_alt_lft(char *str,t_line *line, int *cursor);
-void    ft_clearline(char *str,int cursor,t_line *line);
-void    ft_printnbl(char **str,t_line *line, t_init *init,int *cursor);
-void	ft_delet(char **str,t_line *line, int *cursor);
+void    	ft_clearline(char *str,int cursor,t_line *line);
+void    	ft_printnbl(char **str,t_line *line, t_init *init,int *cursor);
+void		ft_delet(char **str,t_line *line, int *cursor);
+void    	ft_next(t_node **list, int *cursor, char **str, t_line *line);
+void    	ft_prev(t_node **list, int *cursor, char **str, t_line *line);

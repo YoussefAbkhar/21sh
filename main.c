@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
- #include "ft_select.h"
+#include "ft_select.h"
 
 int ft_output(int str)
 {
@@ -61,21 +61,12 @@ void	ft_init(t_line *line)
 	line->row = w.ws_row;
 }
 
-
-// void ft_kdel(char **str, int cursor)
-// {
-// 	char *aff = ft_strsub(*str,0,cursor - 1);
-//     char *pp = ft_strsub(*str,cursor,ft_strlen(*str) - cursor + 1);
-// 	ft_strdel(str);
-//     *str = ft_strjoin(aff,pp);
-// }
-
 int main()
 {
 	t_init init;
 	t_line line;
 	struct termios config;
-	t_node *list;
+	t_node *list,*head;
 	if (!(list = ft_memalloc(sizeof(t_node))))
             return (0);
 	int cursor;
@@ -85,6 +76,7 @@ int main()
 	char *str;
 	str = NULL;
 	ft_init(&line);
+	head = list;
 	while (1)
 	{
 		if (init.k == 1)
@@ -132,28 +124,22 @@ int main()
 				cursor = line.cursor_origne + line.len;
 				cur_goto(&line,cursor);
 			}
-			else if (init.r == END)
+			else if (init.r == END && str)
 			{
-				ft_stock(str, &list);
-				line.col +=1;
+				ft_stock(str, &head,line.len);
+				list = head;
+				cur_goto(&line,line.cursor_origne);
+				tputs(tgetstr("cd", 0), 0, ft_output);
+				ft_strdel(&str);
+				line.len = 0;
 				get_cursor_position(&line);
+				cur_goto(&line,line.cursor);
+				cursor = line.cursor;
 			}
 			else if (init.r == UP)
-			{
-				if (list->next)
-				{
-					list = list->next;
-					ft_putendl(list->content);
-				}
-			}
+				ft_next(&list, &cursor, &str,&line);
 			else if (init.r == DOWN)
-			{
-				if (list->prev)
-				{
-					list = list->prev;
-					ft_putendl(list->content);
-				}
-			}
+				ft_prev(&list, &cursor, &str,&line);
 			else if (init.r == ALTRTH)
 				ft_alt_rth(str, &line, &cursor);
 			else if (init.r == ALTLFT)
