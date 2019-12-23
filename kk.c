@@ -14,9 +14,13 @@
 
 void	ft_lsttoadd(t_node **alst, t_node *new)
 {
+    if (*alst == NULL)
+    {
+        *alst = new;
+        return ;
+    }
     (*alst)->prev = new;
 	new->next = *alst;
-	new->prev = NULL;
     *alst = new;
 }
 
@@ -26,6 +30,8 @@ void        ft_stock(char *str,t_node **list, int len)
 
     new = ft_memalloc(sizeof(t_node));
     new->content = ft_strdup(str);
+	new->next = NULL;
+	new->prev = NULL;
     new->len = len;
     ft_lsttoadd(list, new);
 }

@@ -6,7 +6,7 @@
 /*   By: yabakhar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/16 00:09:39 by yabakhar          #+#    #+#             */
-/*   Updated: 2019/11/19 12:09:00 by yabakhar         ###   ########.fr       */
+/*   Updated: 2019/12/23 01:33:23 by yabakhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ void	ft_init(t_line *line)
     ioctl(0, TIOCGWINSZ, &w);
 	line->col = w.ws_col;
 	line->row = w.ws_row;
+	line->first = 0;
 }
 
 int main()
@@ -67,8 +68,7 @@ int main()
 	t_line line;
 	struct termios config;
 	t_node *list,*head;
-	if (!(list = ft_memalloc(sizeof(t_node))))
-            return (0);
+	list = NULL;
 	int cursor;
 	line.len = 0;
 	cursor = 0;
@@ -81,7 +81,7 @@ int main()
 	{
 		if (init.k == 1)
 		{
-			ft_putstr("->");
+			ft_putstr("\033[32m ➜\033[0m (21sh)✗ ");
 			get_cursor_position(&line);
 			cur_goto(&line,line.cursor);
 			cursor = line.cursor;
@@ -135,11 +135,23 @@ int main()
 				get_cursor_position(&line);
 				cur_goto(&line,line.cursor);
 				cursor = line.cursor;
+				line.first = 0;
 			}
 			else if (init.r == UP)
-				ft_next(&list, &cursor, &str,&line);
+				ft_next(head, &list, &cursor, &str,&line);
 			else if (init.r == DOWN)
-				ft_prev(&list, &cursor, &str,&line);
+			{
+				if (!ft_prev(&list, &cursor, &str,&line))
+				{
+					cur_goto(&line,line.cursor_origne);
+    				tputs(tgetstr("cd", 0), 0, ft_output);
+					ft_strdel(&str);
+					line.len = 0;
+					get_cursor_position(&line);
+					cur_goto(&line,line.cursor);
+					cursor = line.cursor;
+				}
+			}
 			else if (init.r == ALTRTH)
 				ft_alt_rth(str, &line, &cursor);
 			else if (init.r == ALTLFT)

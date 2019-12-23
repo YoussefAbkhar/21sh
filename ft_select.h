@@ -61,6 +61,7 @@ typedef struct		s_line
 	int				len;
 	int				cursor;
 	int				cursor_origne;
+	int				first;
 }					t_line;
 
 void        ft_stock(char *str,t_node **list, int len);
@@ -71,5 +72,6 @@ void		ft_alt_lft(char *str,t_line *line, int *cursor);
 void    	ft_clearline(char *str,int cursor,t_line *line);
 void    	ft_printnbl(char **str,t_line *line, t_init *init,int *cursor);
 void		ft_delet(char **str,t_line *line, int *cursor);
-void    	ft_next(t_node **list, int *cursor, char **str, t_line *line);
-void    	ft_prev(t_node **list, int *cursor, char **str, t_line *line);
+void    	ft_next(t_node *head,t_node **list, int *cursor, char **str, t_line *line);
+t_node    	*ft_prev(t_node **list, int *cursor, char **str, t_line *line);
+void		get_cursor_position(t_line *line);

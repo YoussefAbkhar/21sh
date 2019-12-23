@@ -13,36 +13,41 @@
 
 #include "ft_select.h"
 
-void    ft_next(t_node **list, int *cursor, char **str, t_line *line)
+void    ft_next(t_node *head,t_node **list, int *cursor, char **str, t_line *line)
 {
-    if ((*list)->next)
+	if ((*list) == NULL)
+		*list = head;
+	else if  (line->first && list &&  (*list) && (*list)->next)
+		(*list) = (*list)->next;
+    if (list  && (*list))
     {
-    	(*list) = (*list)->next;
     	cur_goto(line,line->cursor_origne);
     	tputs(tgetstr("cd", 0), 0, ft_output);
     	ft_putstr((*list)->content);
     	line->len = (*list)->len;
-		if (*str)
-			ft_strdel(str);
-		*cursor = (line->cursor_origne + (*list)->len);
+		ft_strdel(str);
+		*cursor = line->cursor_origne + (*list)->len;
     	*str = ft_strdup((*list)->content);
 		cur_goto(line, *cursor);
+		line->first = 1;
     }
 }
 
-void    ft_prev(t_node **list, int *cursor, char **str, t_line *line)
+t_node    *ft_prev(t_node **list, int *cursor, char **str, t_line *line)
 {
-    if ((*list)->prev)
+	if (line->first && list && (*list))
+		(*list) = (*list)->prev;
+	if ((*list))
     {
-    	(*list) = (*list)->prev;
     	cur_goto(line,line->cursor_origne);
     	tputs(tgetstr("cd", 0), 0, ft_output);
     	ft_putstr((*list)->content);
     	line->len = (*list)->len;
-		if (*str)
-			ft_strdel(str);
-		*cursor = (line->cursor_origne + (*list)->len);
+		ft_strdel(str);
+		*cursor = line->cursor_origne + (*list)->len;
     	*str = ft_strdup((*list)->content);
 		cur_goto(line, *cursor);
+		line->first = 1;
     }
+	return(*list);
 }
