@@ -125,20 +125,11 @@ int main()
 				cur_goto(&line,cursor);
 			}
 			else if (init.r == END && str)
-			{
-				ft_stock(str, &head,line.len);
-				list = head;
-				cur_goto(&line,line.cursor_origne);
-				tputs(tgetstr("cd", 0), 0, ft_output);
-				ft_strdel(&str);
-				line.len = 0;
-				get_cursor_position(&line);
-				cur_goto(&line,line.cursor);
-				cursor = line.cursor;
-				line.first = 0;
-			}
+				ft_end(&head, &list, &cursor, &str,&line);
 			else if (init.r == UP)
+			{
 				ft_next(head, &list, &cursor, &str,&line);
+			}
 			else if (init.r == DOWN)
 			{
 				if (!ft_prev(&list, &cursor, &str,&line))

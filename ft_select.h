@@ -75,3 +75,4 @@ void		ft_delet(char **str,t_line *line, int *cursor);
 void    	ft_next(t_node *head,t_node **list, int *cursor, char **str, t_line *line);
 t_node    	*ft_prev(t_node **list, int *cursor, char **str, t_line *line);
 void		get_cursor_position(t_line *line);
+void	ft_end(t_node **head,t_node **list, int *cursor, char **str, t_line *line);

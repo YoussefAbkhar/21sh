@@ -13,6 +13,20 @@
 
 #include "ft_select.h"
 
+void	ft_end(t_node **head,t_node **list, int *cursor, char **str, t_line *line)
+{
+	ft_stock(*str, head,line->len);
+	list = head;
+	cur_goto(line,line->cursor_origne);
+	tputs(tgetstr("cd", 0), 0, ft_output);
+	ft_strdel(str);
+	line->len = 0;
+	get_cursor_position(line);
+	cur_goto(line,line->cursor);
+	*cursor = line->cursor;
+	line->first = 0;
+}
+
 void    ft_next(t_node *head,t_node **list, int *cursor, char **str, t_line *line)
 {
 	if ((*list) == NULL)
@@ -45,7 +59,7 @@ t_node    *ft_prev(t_node **list, int *cursor, char **str, t_line *line)
     	line->len = (*list)->len;
 		ft_strdel(str);
 		*cursor = line->cursor_origne + (*list)->len;
-    	*str = ft_strdup((*list)->content);
+		*str = ft_strdup((*list)->content);
 		cur_goto(line, *cursor);
 		line->first = 1;
     }
