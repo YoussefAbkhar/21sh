@@ -28,10 +28,8 @@ void        ft_stock(char *str,t_node **list, int len)
 {
     t_node *new;
 
-    new = ft_memalloc(sizeof(t_node));
+    new = (t_node *)ft_memalloc(sizeof(t_node));
     new->content = ft_strdup(str);
-	new->next = NULL;
-	new->prev = NULL;
     new->len = len;
     ft_lsttoadd(list, new);
 }

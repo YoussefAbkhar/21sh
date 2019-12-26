@@ -45,6 +45,36 @@ void get_cursor_position(t_line *line)
     line->cursor = line->cursor_origne;
 }
 
+void		ft_putstr4(char *s, char *s1, char *s2, char *s3)
+{
+	ft_putstr(s);
+	ft_putstr(s1);
+	ft_putstr(s2);
+	ft_putstr(s3);
+}
+void                    ft_porompte(void)
+{
+        char            cwd[256];
+        char            *cwd1;
+        char            *str1;
+
+        if (getcwd(cwd, sizeof(cwd)))
+                cwd1 = getcwd(cwd, sizeof(cwd));
+        else
+        {
+            ft_putstr4("\033[1;33m", " 😡 permission denied ", "\n", "\033[0m");
+            exit(1);
+		}
+        if (ft_strcmp(cwd1, "/") == 0)
+        {
+            ft_putstr4("\033[1;33m", "😜 ", cwd1, " $> \033[0m");
+            return ;
+        }
+        str1 = ft_strrchr(cwd1, '/');
+        ft_putstr4("\033[1;32m➜", "  \033[1;36m", str1 + 1, " $> \033[0m");
+
+}
+
 void	ft_init(t_line *line)
 {
 	char buf[1024];
@@ -59,7 +89,6 @@ void	ft_init(t_line *line)
     ioctl(0, TIOCGWINSZ, &w);
 	line->col = w.ws_col;
 	line->row = w.ws_row;
-	line->first = 0;
 }
 
 int main()
@@ -81,7 +110,7 @@ int main()
 	{
 		if (init.k == 1)
 		{
-			ft_putstr("\033[32m ➜\033[0m (21sh)✗ ");
+			ft_porompte();
 			get_cursor_position(&line);
 			cur_goto(&line,line.cursor);
 			cursor = line.cursor;
@@ -125,24 +154,28 @@ int main()
 				cur_goto(&line,cursor);
 			}
 			else if (init.r == END && str)
-				ft_end(&head, &list, &cursor, &str,&line);
-			else if (init.r == UP)
 			{
-				ft_next(head, &list, &cursor, &str,&line);
-			}
-			else if (init.r == DOWN)
-			{
-				if (!ft_prev(&list, &cursor, &str,&line))
+				if (list && list->prev)
 				{
-					cur_goto(&line,line.cursor_origne);
-    				tputs(tgetstr("cd", 0), 0, ft_output);
-					ft_strdel(&str);
-					line.len = 0;
-					get_cursor_position(&line);
-					cur_goto(&line,line.cursor);
-					cursor = line.cursor;
+					head = head->next;
+					ft_strdel(&head->prev->content);
+					ft_memdel((void**)&head->prev);
 				}
+				ft_stock(str, &head,line.len);
+				list = NULL;
+				cur_goto(&line,line.cursor_origne);
+				tputs(tgetstr("cd", 0), 0, ft_output);
+				ft_strdel(&str);
+				line.len = 0;
+				get_cursor_position(&line);
+				cur_goto(&line,line.cursor);
+				cursor = line.cursor;
+				line.first = 0;
 			}
+			else if (init.r == UP)
+				ft_next(&head, &list, &cursor, &str,&line);
+			else if (init.r == DOWN)
+				ft_prev(&head, &list, &cursor, &str,&line);
 			else if (init.r == ALTRTH)
 				ft_alt_rth(str, &line, &cursor);
 			else if (init.r == ALTLFT)
