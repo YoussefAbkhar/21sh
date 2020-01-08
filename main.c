@@ -91,6 +91,15 @@ void	ft_init(t_line *line)
 	line->row = w.ws_row;
 }
 
+void print_porompte(int *cursor,t_line *line)
+{
+	write(1, "\n", 1);
+	ft_porompte();
+	get_cursor_position(line);
+	cur_goto(line,line->cursor);
+	*cursor = line->cursor;
+}
+
 int main()
 {
 	t_init init;
@@ -165,13 +174,13 @@ int main()
 				list = NULL;
 				cur_goto(&line,line.cursor_origne);
 				tputs(tgetstr("cd", 0), 0, ft_output);
+				ft_putstr(str);
 				ft_strdel(&str);
 				line.len = 0;
-				get_cursor_position(&line);
-				cur_goto(&line,line.cursor);
-				cursor = line.cursor;
-				line.first = 0;
+				print_porompte(&cursor,&line);
 			}
+			else if (init.r == END && !str)
+				print_porompte(&cursor,&line);
 			else if (init.r == UP)
 				ft_next(&head, &list, &cursor, &str,&line);
 			else if (init.r == DOWN)

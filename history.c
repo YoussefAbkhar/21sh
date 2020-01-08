@@ -28,6 +28,8 @@ void    ft_next(t_node **head,t_node **list, int *cursor, char **str, t_line *li
 		}
 		(*list) = (*list)->next;
 	}
+	else
+		ft_putstr(tgetstr("bl", NULL));
 	if (list && (*list))
 	{
 		cur_goto(line, line->cursor_origne);

@@ -59,12 +59,9 @@ typedef struct		s_line
 	int				row;
 	int				len;
 	int				cursor;
-	char			*tmp;
-	int				intmp;
-	int 			tmp_len;
 	int				cursor_origne;
-	int				first;
 }					t_line;
+
 
 void        ft_stock(char *str,t_node **list, int len);
 int			ft_output(int str);

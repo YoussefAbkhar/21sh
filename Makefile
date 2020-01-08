@@ -12,7 +12,7 @@
 
 NAME = 21sh
 
-tCFLAGS = -g -Wall -Werror -Wextra
+CFLAGS = -g -Wall -Werror -Wextra
 
 SRCS = main.c kk.c keys_alt.c history.c
 
