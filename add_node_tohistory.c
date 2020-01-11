@@ -10,21 +10,21 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_select.h"
+#include "21sh.h"
 
-void	ft_lsttoadd(t_node **alst, t_node *new)
+void ft_lsttoadd(t_node **alst, t_node *new)
 {
     if (*alst == NULL)
     {
         *alst = new;
-        return ;
+        return;
     }
     (*alst)->prev = new;
-	new->next = *alst;
+    new->next = *alst;
     *alst = new;
 }
 
-void        ft_stock(char *str,t_node **list, int len)
+void ft_stock(char *str, t_node **list, int len)
 {
     t_node *new;
 

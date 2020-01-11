@@ -10,11 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_select.h"
+#include "21sh.h"
 
 void    ft_clearline(char *str,int cursor,t_line *line)
 {
-	cur_goto(line,line->cursor_origne);
+	cur_goto(line,get_oc(line));
 	tputs(tgetstr("cd", 0), 0, ft_output);
 	ft_putstr(str);
 	cur_goto(line,cursor);
@@ -23,8 +23,8 @@ void    ft_clearline(char *str,int cursor,t_line *line)
 void    ft_alt_rth(char *str,t_line *line, int *cursor)
 {
 	int k;
-	k = *cursor - line->cursor_origne;
-	if ((*cursor) < line->cursor_origne + line->len)
+	k = *cursor - get_oc(line);
+	if ((*cursor) < get_oc(line) + line->len)
 	{
 		while (str[(k)])
 		{
@@ -47,8 +47,8 @@ void    ft_alt_rth(char *str,t_line *line, int *cursor)
 void    ft_alt_lft(char *str,t_line *line, int *cursor)
 {
 	int k;
-	k = *cursor - line->cursor_origne;
-	if ((*cursor) > line->cursor_origne)
+	k = *cursor - get_oc(line);
+	if ((*cursor) > get_oc(line))
 	{
 		while (str[--(k)])
 		{
@@ -89,7 +89,7 @@ void	ft_delet(char **str,t_line *line, int *cursor)
 	char *tmp;
 	char *tmp1;
 	int k;
-	k = *cursor - line->cursor_origne;
+	k = *cursor - get_oc(line);
 	if (k > 0 && line->len > 0)
 	{
 		tmp = ft_strsub(*str,0,(k) - 1);
@@ -98,7 +98,7 @@ void	ft_delet(char **str,t_line *line, int *cursor)
     	*str = ft_strjoin(tmp,tmp1);
 		ft_strdel(&tmp);
 		ft_strdel(&tmp1);
-		cur_goto(line,line->cursor_origne);
+		cur_goto(line,get_oc(line));
 		tputs(tgetstr("cd", 0), 0, ft_output);
 		ft_putstr(*str);
 		(*cursor)--;
@@ -115,7 +115,7 @@ void    ft_printnbl(char **str,t_line *line, t_init *init,int *cursor)
 		init->c[0] = init->r;
 		if (!(*str))
 			(*str) = ft_strdup("\0");
-		ft_print(str,init->c, *cursor - line->cursor_origne);
+		ft_print(str,init->c, *cursor - get_oc(line));
 		(*cursor)++;
 		line->len++;
 		ft_clearline(*str,*cursor,line);

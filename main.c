@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_select.h"
+#include "21sh.h"
 
 int ft_output(int str)
 {
@@ -18,64 +18,65 @@ int ft_output(int str)
 	return (0);
 }
 
+int get_oc(t_line *line)
+{
+	return(line->cursor_origne.y * line->col + line->cursor_origne.x - 1);
+}
+
 void cur_goto(t_line *line, int cursor)
 {
-    int co;
-    int li;
+	int co;
+	int li;
 
-    li = cursor / line->col;
-    co = cursor % line->col;
-    line->cursor = cursor;
-    tputs(tgoto(tgetstr("cm", 0), co, li), 0, ft_output);
+	li = cursor / line->col;
+	co = cursor % line->col;
+	tputs(tgoto(tgetstr("cm", 0), co, li), 0, ft_output);
 }
 
 void get_cursor_position(t_line *line)
 {
-    char *buff;
-    int col;
-    int row;
+	char *buff;
 
-    buff = (char[20]){0};
-    ft_putstr_fd("\e[6n", 0);
-    read(0, buff, 20);
-    row = ft_atoi(buff + 2);
-    buff = (char *)ft_strchr(buff, ';');
-    col = ft_atoi(buff + 1);
-    line->cursor_origne = (row - 1) * line->col + col - 1;
-    line->cursor = line->cursor_origne;
+	buff = (char[20]){0};
+	ft_putstr_fd("\e[6n", 0);
+	read(0, buff, 20);
+	line->cursor_origne.y = ft_atoi(buff + 2) - 1;
+	if ((buff = (char *)ft_strchr(buff, ';')))
+		line->cursor_origne.x = ft_atoi(buff + 1);
+	else
+		line->cursor_origne.x = 0;
 }
 
-void		ft_putstr4(char *s, char *s1, char *s2, char *s3)
+void ft_putstr4(char *s, char *s1, char *s2, char *s3)
 {
 	ft_putstr(s);
 	ft_putstr(s1);
 	ft_putstr(s2);
 	ft_putstr(s3);
 }
-void                    ft_porompte(void)
+void ft_porompte(void)
 {
-        char            cwd[256];
-        char            *cwd1;
-        char            *str1;
+	char cwd[256];
+	char *cwd1;
+	char *str1;
 
-        if (getcwd(cwd, sizeof(cwd)))
-                cwd1 = getcwd(cwd, sizeof(cwd));
-        else
-        {
-            ft_putstr4("\033[1;33m", " 😡 permission denied ", "\n", "\033[0m");
-            exit(1);
-		}
-        if (ft_strcmp(cwd1, "/") == 0)
-        {
-            ft_putstr4("\033[1;33m", "😜 ", cwd1, " $> \033[0m");
-            return ;
-        }
-        str1 = ft_strrchr(cwd1, '/');
-        ft_putstr4("\033[1;32m➜", "  \033[1;36m", str1 + 1, " $> \033[0m");
-
+	if (getcwd(cwd, sizeof(cwd)))
+		cwd1 = getcwd(cwd, sizeof(cwd));
+	else
+	{
+		ft_putstr4("\033[1;33m", " 😡 permission denied ", "\n", "\033[0m");
+		exit(1);
+	}
+	if (ft_strcmp(cwd1, "/") == 0)
+	{
+		ft_putstr4("\033[1;33m", "😜 ", cwd1, " $> \033[0m");
+		return;
+	}
+	str1 = ft_strrchr(cwd1, '/');
+	ft_putstr4("\033[1;32m➜", "  \033[1;36m", str1 + 1, " $> \033[0m");
 }
 
-void	ft_init(t_line *line)
+void ft_init(t_line *line)
 {
 	char buf[1024];
 	struct winsize w;
@@ -86,26 +87,25 @@ void	ft_init(t_line *line)
 	if (tcsetattr(0, 0, &config) < 0)
 		ft_putstr_fd("error", 0);
 	tgetent(buf, getenv("TERM"));
-    ioctl(0, TIOCGWINSZ, &w);
+	ioctl(0, TIOCGWINSZ, &w);
 	line->col = w.ws_col;
 	line->row = w.ws_row;
 }
 
-void print_porompte(int *cursor,t_line *line)
+void print_porompte(int *cursor, t_line *line)
 {
 	write(1, "\n", 1);
 	ft_porompte();
 	get_cursor_position(line);
-	cur_goto(line,line->cursor);
-	*cursor = line->cursor;
+	cur_goto(line, get_oc(line));
+	*cursor = get_oc(line);
 }
 
 int main()
 {
 	t_init init;
 	t_line line;
-	struct termios config;
-	t_node *list,*head;
+	t_node *list, *head;
 	list = NULL;
 	int cursor;
 	line.len = 0;
@@ -121,76 +121,37 @@ int main()
 		{
 			ft_porompte();
 			get_cursor_position(&line);
-			cur_goto(&line,line.cursor);
-			cursor = line.cursor;
+			cur_goto(&line, get_oc(&line));
+			cursor = get_oc(&line);
 			init.k = -1;
 		}
 		init.r = 0;
 		if (read(0, &init.r, sizeof(int)) > 0)
 		{
 			if (init.r == ESC)
-			{
-				config.c_lflag |= (ECHO | ICANON);
-				tputs(tgetstr("me", 0), 0, ft_output);
-				exit(1);
-			}
+				esc();
 			else if (init.r == LEFT)
-			{
-				if (cursor > line.cursor_origne)
-				{
-					cursor--;
-					cur_goto(&line,cursor);
-				}
-			}
+				move_left(&line,&cursor);
 			else if (init.r == RIGHT)
-			{
-				if (cursor < (line.cursor_origne + line.len))
-				{
-					cursor++;
-					cur_goto(&line,cursor);
-				}
-			}
+				move_right(&line,&cursor);
 			else if (init.r == DEL)
-				ft_delet(&str,&line, &cursor);
-			else if (init.r == HOME)
-			{
-				cursor = line.cursor_origne;
-				cur_goto(&line,cursor);
-			}
-			else if (init.r == DEEP)
-			{
-				cursor = line.cursor_origne + line.len;
-				cur_goto(&line,cursor);
-			}
+				ft_delet(&str, &line, &cursor);
+			else if (init.r == HOME || init.r == DEEP)
+				home_deep(&line,&init,&cursor);
 			else if (init.r == END && str)
-			{
-				if (list && list->prev)
-				{
-					head = head->next;
-					ft_strdel(&head->prev->content);
-					ft_memdel((void**)&head->prev);
-				}
-				ft_stock(str, &head,line.len);
-				list = NULL;
-				cur_goto(&line,line.cursor_origne);
-				tputs(tgetstr("cd", 0), 0, ft_output);
-				ft_putstr(str);
-				ft_strdel(&str);
-				line.len = 0;
-				print_porompte(&cursor,&line);
-			}
+				ft_end(&list, &head, &line, &str, &cursor);
 			else if (init.r == END && !str)
-				print_porompte(&cursor,&line);
+				print_porompte(&cursor, &line);
 			else if (init.r == UP)
-				ft_next(&head, &list, &cursor, &str,&line);
+				ft_next(&head, &list, &cursor, &str, &line);
 			else if (init.r == DOWN)
-				ft_prev(&head, &list, &cursor, &str,&line);
+				ft_prev(&head, &list, &cursor, &str, &line);
 			else if (init.r == ALTRTH)
 				ft_alt_rth(str, &line, &cursor);
 			else if (init.r == ALTLFT)
 				ft_alt_lft(str, &line, &cursor);
 			else
-				ft_printnbl(&str,&line,&init,&cursor);
+				ft_printnbl(&str, &line, &init, &cursor);
 		}
 	}
 	return (0);
