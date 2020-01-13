@@ -64,7 +64,10 @@ typedef struct s_line
 	int col;
 	int row;
 	int len;
+	int index;
+	int *tabl;
 	t_point cursor_origne;
+	t_point cursor_virtual;
 } t_line;
 
 
@@ -86,3 +89,5 @@ void       move_left(t_line *line,int *cursor);
 void       move_right(t_line *line,int *cursor);
 void        home_deep(t_line *line,t_init *init,int *cursor);
 void        esc(void);
+void ft_multi(char **str,t_line *line, int *cursor,char **tmp);
+void 		print_multi(char *tmp,t_line *line);

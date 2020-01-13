@@ -90,6 +90,8 @@ void ft_init(t_line *line)
 	ioctl(0, TIOCGWINSZ, &w);
 	line->col = w.ws_col;
 	line->row = w.ws_row;
+	line->index = 0;
+	line->tabl = NULL;
 }
 
 void print_porompte(int *cursor, t_line *line)
@@ -129,7 +131,7 @@ int main()
 		if (read(0, &init.r, sizeof(int)) > 0)
 		{
 			if (init.r == ESC)
-				esc();
+				print_multi(str,&line);
 			else if (init.r == LEFT)
 				move_left(&line,&cursor);
 			else if (init.r == RIGHT)

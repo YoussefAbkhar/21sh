@@ -51,3 +51,57 @@ void        esc(void)
 	tputs(tgetstr("me", 0), 0, ft_output);
 	exit(1);
 }
+
+void		ft_allocate_table(t_line *line,char *str)
+{
+	int i=0;
+	if (str)
+	{
+		while (str[i] && str)
+		{
+			if (str[i] == '\n')
+				line->index++;		
+			i++;
+		}
+	}
+	line->tabl = ft_memalloc(sizeof(int) * (line->index + 1));
+}
+
+void		ft_stock_totable(t_line *line,char *str)
+{
+	int k = 0;   
+    int i = 0;
+    int j = 0;
+    while (str[i] && str)
+    {
+        if (str[i] != '\n' && str[i + 1] != '\0')
+            j++;
+        else
+        {
+			if (str[i + 1] == '\0')
+				line->tabl[k] = j;
+			else
+            	line->tabl[k] = j - 1 ;
+            j = 0;
+			k++;
+        }
+        i++;
+    }
+}
+
+void 		print_multi(char *tmp,t_line *line)
+{
+	if (line->tabl)
+		free(line->tabl);
+	ft_allocate_table(line,tmp);
+	ft_stock_totable(line,tmp);
+	//  int i = 0;
+	// while (i < line->index + 1)
+	// {
+	// 	ft_putnbr(line->tabl[i]);
+	// 	ft_putchar('\n');
+	// 	i++;
+	// }
+	cur_goto(line, get_oc(line));
+	line->index = 0;
+}
