@@ -89,19 +89,16 @@ void		ft_stock_totable(t_line *line,char *str)
     }
 }
 
-void 		print_multi(char *tmp,t_line *line)
+void 		print_multi(char *str,t_line *line,int *cursor)
 {
+	if (line->index == *cursor)
+		str = NULL;
 	if (line->tabl)
 		free(line->tabl);
-	ft_allocate_table(line,tmp);
-	ft_stock_totable(line,tmp);
-	//  int i = 0;
-	// while (i < line->index + 1)
-	// {
-	// 	ft_putnbr(line->tabl[i]);
-	// 	ft_putchar('\n');
-	// 	i++;
-	// }
+	ft_allocate_table(line,str);
+	ft_stock_totable(line,str);
+	line->len = line->tabl[0];
+	ft_putstr(str);
 	cur_goto(line, get_oc(line));
 	line->index = 0;
 }

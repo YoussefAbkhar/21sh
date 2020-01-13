@@ -90,4 +90,4 @@ void       move_right(t_line *line,int *cursor);
 void        home_deep(t_line *line,t_init *init,int *cursor);
 void        esc(void);
 void ft_multi(char **str,t_line *line, int *cursor,char **tmp);
-void 		print_multi(char *tmp,t_line *line);
+void		print_multi(char *str,t_line *line,int *cursor);

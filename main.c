@@ -45,6 +45,7 @@ void get_cursor_position(t_line *line)
 		line->cursor_origne.x = ft_atoi(buff + 1);
 	else
 		line->cursor_origne.x = 0;
+	line->cursor_virtual = line->cursor_origne;
 }
 
 void ft_putstr4(char *s, char *s1, char *s2, char *s3)
@@ -114,7 +115,7 @@ int main()
 	cursor = 0;
 	init.k = 1;
 	char *str;
-	str = NULL;
+	str = "hfeigergh ehrguheriughiuwhegiuheiuuhiuw\nofugeifgiu\nfwheiouhuhu";
 	ft_init(&line);
 	head = list;
 	while (1)
@@ -131,7 +132,7 @@ int main()
 		if (read(0, &init.r, sizeof(int)) > 0)
 		{
 			if (init.r == ESC)
-				print_multi(str,&line);
+				print_multi(str,&line,&cursor);
 			else if (init.r == LEFT)
 				move_left(&line,&cursor);
 			else if (init.r == RIGHT)

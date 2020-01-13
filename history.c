@@ -56,7 +56,6 @@ void ft_prev(t_node **head, t_node **list, int *cursor, char **str, t_line *line
 		ft_strdel(str);
 		*cursor = get_oc(line) + (*list)->len;
 		*str = ft_strdup((*list)->content);
-		print_multi(*str,line);
 		cur_goto(line, *cursor);
 	}
 	else
