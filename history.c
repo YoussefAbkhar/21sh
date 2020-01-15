@@ -32,12 +32,12 @@ void ft_next(t_node **head, t_node **list, int *cursor, char **str, t_line *line
 		ft_putstr(tgetstr("bl", NULL));
 	if (list && (*list))
 	{
-		cur_goto(line, get_oc(line));
+		cur_goto(line, 0);
 		tputs(tgetstr("cd", 0), 0, ft_output);
 		ft_putstr((*list)->content);
 		line->len = (*list)->len;
 		ft_strdel(str);
-		*cursor = get_oc(line) + (*list)->len;
+		*cursor = (*list)->len;
 		*str = ft_strdup((*list)->content);
 		cur_goto(line, *cursor);
 	}
@@ -49,12 +49,12 @@ void ft_prev(t_node **head, t_node **list, int *cursor, char **str, t_line *line
 		(*list) = (*list)->prev;
 	if ((*list))
 	{
-		cur_goto(line, get_oc(line));
+		cur_goto(line,0);
 		tputs(tgetstr("cd", 0), 0, ft_output);
 		ft_putstr((*list)->content);
 		line->len = (*list)->len;
 		ft_strdel(str);
-		*cursor = get_oc(line) + (*list)->len;
+		*cursor = (*list)->len;
 		*str = ft_strdup((*list)->content);
 		cur_goto(line, *cursor);
 	}

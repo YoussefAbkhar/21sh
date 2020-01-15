@@ -20,17 +20,17 @@ int ft_output(int str)
 
 int get_oc(t_line *line)
 {
-	return(line->cursor_origne.y * line->col + line->cursor_origne.x - 1);
+	return(line->c_o.y * line->col + line->c_o.x - 1);
 }
 
 void cur_goto(t_line *line, int cursor)
 {
-	int co;
-	int li;
+	int x;
+	int y;
 
-	li = cursor / line->col;
-	co = cursor % line->col;
-	tputs(tgoto(tgetstr("cm", 0), co, li), 0, ft_output);
+	y = (line->c_v.y + (line->c_v.x + cursor) / line->col);
+	x = ((line->c_v.x + cursor) % line->col);
+	tputs(tgoto(tgetstr("cm", 0), x, y), 0, ft_output);
 }
 
 void get_cursor_position(t_line *line)
@@ -40,12 +40,12 @@ void get_cursor_position(t_line *line)
 	buff = (char[20]){0};
 	ft_putstr_fd("\e[6n", 0);
 	read(0, buff, 20);
-	line->cursor_origne.y = ft_atoi(buff + 2) - 1;
+	line->c_o.y = ft_atoi(buff + 2) - 1;
 	if ((buff = (char *)ft_strchr(buff, ';')))
-		line->cursor_origne.x = ft_atoi(buff + 1);
+		line->c_o.x = ft_atoi(buff + 1);
 	else
-		line->cursor_origne.x = 0;
-	line->cursor_virtual = line->cursor_origne;
+		line->c_o.x = 0;
+	line->c_v = line->c_o;
 }
 
 void ft_putstr4(char *s, char *s1, char *s2, char *s3)
@@ -74,7 +74,7 @@ void ft_porompte(void)
 		return;
 	}
 	str1 = ft_strrchr(cwd1, '/');
-	ft_putstr4("\033[1;32m➜", "  \033[1;36m", str1 + 1, " $> \033[0m");
+	ft_putstr4("\033[1;32m➜", "  \033[1;36m", str1 + 1, " $>\033[0m");
 }
 
 void ft_init(t_line *line)
@@ -92,6 +92,7 @@ void ft_init(t_line *line)
 	line->col = w.ws_col;
 	line->row = w.ws_row;
 	line->index = 0;
+	line->i = 0;
 	line->tabl = NULL;
 }
 
@@ -100,8 +101,8 @@ void print_porompte(int *cursor, t_line *line)
 	write(1, "\n", 1);
 	ft_porompte();
 	get_cursor_position(line);
-	cur_goto(line, get_oc(line));
-	*cursor = get_oc(line);
+	cur_goto(line, 0);
+	*cursor = 0;
 }
 
 int main()
@@ -115,7 +116,7 @@ int main()
 	cursor = 0;
 	init.k = 1;
 	char *str;
-	str = "hfeigergh ehrguheriughiuwhegiuheiuuhiuw\nofugeifgiu\nfwheiouhuhu";
+	str = "\"\nyabakhar\nyabakf egigerhu\nghwertrf\n\"";
 	ft_init(&line);
 	head = list;
 	while (1)
@@ -124,15 +125,15 @@ int main()
 		{
 			ft_porompte();
 			get_cursor_position(&line);
-			cur_goto(&line, get_oc(&line));
-			cursor = get_oc(&line);
+			cur_goto(&line, 0);
+			cursor = 0;
 			init.k = -1;
 		}
 		init.r = 0;
 		if (read(0, &init.r, sizeof(int)) > 0)
 		{
 			if (init.r == ESC)
-				print_multi(str,&line,&cursor);
+				print_multi(str,&line);
 			else if (init.r == LEFT)
 				move_left(&line,&cursor);
 			else if (init.r == RIGHT)

@@ -12,21 +12,57 @@
 
 #include "21sh.h"
 
+void move_cursor_v(t_line *line)
+{
+	t_point point;
+	int i;
+	point = line->c_o;
+	i = line->i;
+	while (i > 0)
+	{
+		i--;
+		point.y += line->tabl[i] / line->col;
+		if (line->tabl[line->i] % line->col > 0)
+			point.y += 1;
+		point.x = 0;
+	}
+	line->c_v = point;
+}
+
 void       move_left(t_line *line,int *cursor)
 {
-    if ((*cursor) > get_oc(line))
+    if ((*cursor) > 0 && line->len > 0)
 	{
 		(*cursor)--;
 		cur_goto(line, (*cursor));
+	}
+	else if ((*cursor) == 0 && line->index > 0 && line->i > 0)
+	{
+		line->i--;
+		line->len = line->tabl[line->i];
+		(*cursor) = line->len;
+		move_cursor_v(line);
+		if (line->i == 0)
+			tputs(tgoto(tgetstr("cm", 0), line->c_o.x + (*cursor),line->c_v.y), 0, ft_output);
+		else
+			tputs(tgoto(tgetstr("cm", 0), (*cursor) ,line->c_v.y), 0, ft_output);
 	}
 }
 
 void       move_right(t_line *line,int *cursor)
 {
-    if ((*cursor) < (get_oc(line) + line->len))
+ 	if ((*cursor) < line->len)
 	{
 		(*cursor)++;
 		cur_goto(line, (*cursor));
+	}
+	else if ((*cursor) == line->len  && line->index > 0 && line->index > line->i)
+	{
+		line->i++;
+		line->len = line->tabl[line->i];
+		move_cursor_v(line);
+		tputs(tgoto(tgetstr("cm", 0), line->c_v.x, line->c_v.y), 0, ft_output);
+		(*cursor) = 0;
 	}
 }
 
@@ -34,13 +70,19 @@ void        home_deep(t_line *line,t_init *init,int *cursor)
 {
     if (init->r == HOME)
 	{
-		(*cursor) = get_oc(line);
-		cur_goto(line, (*cursor));
+		line->c_v = line->c_o;
+		line->i = 0;
+		(*cursor) = 0;
+		line->len = line->tabl[line->i];
+		tputs(tgoto(tgetstr("cm", 0), line->c_v.x, line->c_v.y), 0, ft_output);
 	}
 	else if (init->r == DEEP)
 	{
-		(*cursor) = get_oc(line) + line->len;
-		cur_goto(line, (*cursor));
+		line->i = line->index;
+		line->len = line->tabl[line->i];
+		(*cursor) = line->len;
+		move_cursor_v(line);
+		tputs(tgoto(tgetstr("cm", 0), line->c_v.x + 1, line->c_v.y), 0, ft_output);
 	}
 }
 
@@ -52,36 +94,21 @@ void        esc(void)
 	exit(1);
 }
 
-void		ft_allocate_table(t_line *line,char *str)
-{
-	int i=0;
-	if (str)
-	{
-		while (str[i] && str)
-		{
-			if (str[i] == '\n')
-				line->index++;		
-			i++;
-		}
-	}
-	line->tabl = ft_memalloc(sizeof(int) * (line->index + 1));
-}
-
 void		ft_stock_totable(t_line *line,char *str)
 {
 	int k = 0;   
     int i = 0;
     int j = 0;
-    while (str[i] && str)
+    while (str && str[i])
     {
         if (str[i] != '\n' && str[i + 1] != '\0')
             j++;
         else
         {
 			if (str[i + 1] == '\0')
-				line->tabl[k] = j;
+				line->tabl[k] = j + 1;
 			else
-            	line->tabl[k] = j - 1 ;
+            	line->tabl[k] = j;
             j = 0;
 			k++;
         }
@@ -89,16 +116,25 @@ void		ft_stock_totable(t_line *line,char *str)
     }
 }
 
-void 		print_multi(char *str,t_line *line,int *cursor)
+void		ft_allocate_table(t_line *line,char *str)
 {
-	if (line->index == *cursor)
-		str = NULL;
+	int i = 0;
+	while (str[i] && str)
+	{
+		if (str[i] == '\n')
+			line->index++;		
+		i++;
+	}
+	line->tabl = ft_memalloc(sizeof(int) * (line->index + 1));
+	ft_stock_totable(line,str);
+}
+
+void 		print_multi(char *str,t_line *line)
+{
 	if (line->tabl)
 		free(line->tabl);
-	ft_allocate_table(line,str);
-	ft_stock_totable(line,str);
-	line->len = line->tabl[0];
 	ft_putstr(str);
-	cur_goto(line, get_oc(line));
-	line->index = 0;
+	ft_allocate_table(line,str);
+	line->len = line->tabl[line->i];
+	cur_goto(line, 0);
 }
