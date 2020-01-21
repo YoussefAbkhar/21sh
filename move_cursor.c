@@ -6,7 +6,7 @@
 /*   By: yabakhar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/11 16:19:30 by yabakhar          #+#    #+#             */
-/*   Updated: 2020/01/11 16:19:34 by yabakhar         ###   ########.fr       */
+/*   Updated: 2020/01/15 14:32:01 by yabakhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,32 @@ void move_cursor_v(t_line *line)
 	line->c_v = point;
 }
 
+void       move_right(t_line *line, int *cursor)
+{
+ 	if ((*cursor) < line->len)
+	{
+		(*cursor)++;
+		cur_goto(line, (*cursor));
+		line->t_len++;
+	}
+	else if ((*cursor) == line->len  && line->index > 0 && line->index > line->i)
+	{
+		line->i++;
+		line->len = line->tabl[line->i];
+		move_cursor_v(line);
+		tputs(tgoto(tgetstr("cm", 0), line->c_v.x, line->c_v.y), 0, ft_output);
+		(*cursor) = 0;
+		line->t_len++;
+	}
+}
+
 void       move_left(t_line *line,int *cursor)
 {
     if ((*cursor) > 0 && line->len > 0)
 	{
 		(*cursor)--;
 		cur_goto(line, (*cursor));
+		line->t_len--;
 	}
 	else if ((*cursor) == 0 && line->index > 0 && line->i > 0)
 	{
@@ -46,23 +66,37 @@ void       move_left(t_line *line,int *cursor)
 			tputs(tgoto(tgetstr("cm", 0), line->c_o.x + (*cursor),line->c_v.y), 0, ft_output);
 		else
 			tputs(tgoto(tgetstr("cm", 0), (*cursor) ,line->c_v.y), 0, ft_output);
+		line->t_len--;
 	}
 }
 
-void       move_right(t_line *line,int *cursor)
+void       move_up(t_line *line,int *cursor)
 {
- 	if ((*cursor) < line->len)
+	if (line->i > 0)
 	{
-		(*cursor)++;
-		cur_goto(line, (*cursor));
+		line->i--;
+		line->len = line->tabl[line->i];
+		move_cursor_v(line);
+		if ((*cursor) > line->tabl[line->i])
+			(*cursor) = line->tabl[line->i];
+		if (line->i == 0)
+			tputs(tgoto(tgetstr("cm", 0), line->c_o.x + (*cursor),line->c_v.y), 0, ft_output);
+		else
+			tputs(tgoto(tgetstr("cm", 0), (*cursor) ,line->c_v.y), 0, ft_output);
 	}
-	else if ((*cursor) == line->len  && line->index > 0 && line->index > line->i)
+}
+
+void       move_down(t_line *line,int *cursor)
+{
+
+	if (line->i < line->index)
 	{
 		line->i++;
 		line->len = line->tabl[line->i];
 		move_cursor_v(line);
-		tputs(tgoto(tgetstr("cm", 0), line->c_v.x, line->c_v.y), 0, ft_output);
-		(*cursor) = 0;
+		if ((*cursor) > line->tabl[line->i])
+			(*cursor) = line->tabl[line->i];
+		tputs(tgoto(tgetstr("cm", 0), (*cursor) ,line->c_v.y), 0, ft_output);
 	}
 }
 
@@ -82,7 +116,7 @@ void        home_deep(t_line *line,t_init *init,int *cursor)
 		line->len = line->tabl[line->i];
 		(*cursor) = line->len;
 		move_cursor_v(line);
-		tputs(tgoto(tgetstr("cm", 0), line->c_v.x + 1, line->c_v.y), 0, ft_output);
+		tputs(tgoto(tgetstr("cm", 0), line->c_v.x + line->len, line->c_v.y), 0, ft_output);
 	}
 }
 
@@ -99,6 +133,7 @@ void		ft_stock_totable(t_line *line,char *str)
 	int k = 0;   
     int i = 0;
     int j = 0;
+	
     while (str && str[i])
     {
         if (str[i] != '\n' && str[i + 1] != '\0')
@@ -119,22 +154,25 @@ void		ft_stock_totable(t_line *line,char *str)
 void		ft_allocate_table(t_line *line,char *str)
 {
 	int i = 0;
-	while (str[i] && str)
+	if (str)
 	{
-		if (str[i] == '\n')
-			line->index++;		
-		i++;
+		while (str[i])
+		{
+			if (str[i] == '\n')
+				line->index++;		
+			i++;
+		}
 	}
 	line->tabl = ft_memalloc(sizeof(int) * (line->index + 1));
 	ft_stock_totable(line,str);
 }
 
-void 		print_multi(char *str,t_line *line)
+void 		multilne(char *str,t_line *line)
 {
 	if (line->tabl)
 		free(line->tabl);
-	ft_putstr(str);
+	line->len = 0;
+	line->index = 0;
 	ft_allocate_table(line,str);
 	line->len = line->tabl[line->i];
-	cur_goto(line, 0);
 }

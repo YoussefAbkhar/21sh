@@ -6,7 +6,7 @@
 /*   By: yabakhar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/16 00:09:39 by yabakhar          #+#    #+#             */
-/*   Updated: 2019/12/23 01:33:23 by yabakhar         ###   ########.fr       */
+/*   Updated: 2020/01/15 14:41:49 by yabakhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,16 +93,21 @@ void ft_init(t_line *line)
 	line->row = w.ws_row;
 	line->index = 0;
 	line->i = 0;
-	line->tabl = NULL;
+	line->tabl = 0;
 }
 
 void print_porompte(int *cursor, t_line *line)
 {
+	int i = line->index - line->i;
+	while (i-- > 0)
+		write(1, "\n", 1);
+	line->index = 0;
+	line->i = 0;
 	write(1, "\n", 1);
 	ft_porompte();
 	get_cursor_position(line);
-	cur_goto(line, 0);
 	*cursor = 0;
+	tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
 }
 
 int main()
@@ -110,13 +115,15 @@ int main()
 	t_init init;
 	t_line line;
 	t_node *list, *head;
+	char buff[1024];
 	list = NULL;
 	int cursor;
 	line.len = 0;
 	cursor = 0;
 	init.k = 1;
+	int i;
 	char *str;
-	str = "\"\nyabakhar\nyabakf egigerhu\nghwertrf\n\"";
+	str = NULL;
 	ft_init(&line);
 	head = list;
 	while (1)
@@ -128,18 +135,26 @@ int main()
 			cur_goto(&line, 0);
 			cursor = 0;
 			init.k = -1;
+			line.t_len = 0;
+			line.b_line = 0;
 		}
 		init.r = 0;
-		if (read(0, &init.r, sizeof(int)) > 0)
+		ft_bzero(buff, 1024);
+		if (read(0, buff, 1023) > 0)
 		{
+			init.r = (int)*((int *)buff);
 			if (init.r == ESC)
-				print_multi(str,&line);
+				ft_putnbr(line.tabl[line.i]);
 			else if (init.r == LEFT)
 				move_left(&line,&cursor);
 			else if (init.r == RIGHT)
 				move_right(&line,&cursor);
 			else if (init.r == DEL)
 				ft_delet(&str, &line, &cursor);
+			else if (init.r == page_down)
+				move_down(&line,&cursor);
+			else if (init.r == page_up)
+				move_up(&line,&cursor);
 			else if (init.r == HOME || init.r == DEEP)
 				home_deep(&line,&init,&cursor);
 			else if (init.r == END && str)
@@ -150,12 +165,22 @@ int main()
 				ft_next(&head, &list, &cursor, &str, &line);
 			else if (init.r == DOWN)
 				ft_prev(&head, &list, &cursor, &str, &line);
-			else if (init.r == ALTRTH)
+			else if (init.r == alt_rth)
 				ft_alt_rth(str, &line, &cursor);
-			else if (init.r == ALTLFT)
+			else if (init.r == alt_lft)
 				ft_alt_lft(str, &line, &cursor);
 			else
-				ft_printnbl(&str, &line, &init, &cursor);
+			{
+				i = -1;
+				while (buff[++i] && (ft_isprint(buff[i]) || buff[i] == '\n'))
+					ft_printnbl(&str, &line, &init, &cursor,buff[i]);
+				move_cursor_v(&line);
+				if (line.i == 0)
+					tputs(tgoto(tgetstr("cm", 0), line.c_o.x + (cursor),line.c_v.y), 0, ft_output);
+				else
+					tputs(tgoto(tgetstr("cm", 0), (cursor) ,line.c_v.y), 0, ft_output);
+				i = 0;
+			}
 		}
 	}
 	return (0);

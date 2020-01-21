@@ -31,10 +31,16 @@
 #define DEL 127
 #define END 10
 #define ESC 27
-#define ALTRTH 26139
-#define ALTLFT 25115
+#define alt_rth 26139
+#define alt_lft 25115
 #define HOME 4741915
 #define DEEP 4610843
+#define alt_C 42947
+#define alt_V 10127586
+#define alt_S 40899
+#define alt_up 1096489755
+#define page_down 2117491483
+#define page_up 2117425947
 
 typedef struct s_init
 {
@@ -49,6 +55,10 @@ typedef struct s_node
 {
 	int len;
 	char *content;
+	int *tabl;
+	int	index;
+	int t_len;
+	int	b_line;
 	struct s_node *next;
 	struct s_node *prev;
 } t_node;
@@ -67,19 +77,22 @@ typedef struct s_line
 	int index;
 	int i;
 	int *tabl;
+	int t_len;
 	t_point c_o;
 	t_point c_v;
-} t_line;
+	int	b_line;
+	char *tmp;
+}				t_line;
 
 
 int get_oc(t_line *line);
-void ft_stock(char *str, t_node **list, int len);
+void ft_stock(char *str, t_node **list, t_line *line);
 int ft_output(int str);
 void cur_goto(t_line *line, int cursor);
 void ft_alt_rth(char *str, t_line *line, int *cursor);
 void ft_alt_lft(char *str, t_line *line, int *cursor);
 void ft_clearline(char *str, int cursor, t_line *line);
-void ft_printnbl(char **str, t_line *line, t_init *init, int *cursor);
+void ft_printnbl(char **str, t_line *line, t_init *init, int *cursor,char c);
 void ft_delet(char **str, t_line *line, int *cursor);
 void ft_next(t_node **head, t_node **list, int *cursor, char **str, t_line *line);
 void ft_prev(t_node **head, t_node **list, int *cursor, char **str, t_line *line);
@@ -91,4 +104,8 @@ void       move_right(t_line *line,int *cursor);
 void        home_deep(t_line *line,t_init *init,int *cursor);
 void        esc(void);
 void ft_multi(char **str,t_line *line, int *cursor,char **tmp);
-void		print_multi(char *str,t_line *line);
+void		multilne(char *str,t_line *line);
+void       move_up(t_line *line,int *cursor);
+void       move_down(t_line *line,int *cursor);
+void move_cursor_v(t_line *line);
+
