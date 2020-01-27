@@ -34,6 +34,6 @@ void ft_stock(char *str, t_node **list, t_line *line)
     new->len = line->len;
     new->tabl = line->tabl;
     new->index = line->index;
-    new->t_len = line->t_len;
+    new->t_len = line->c_len;
     ft_lsttoadd(list, new);
 }

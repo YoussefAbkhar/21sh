@@ -71,41 +71,40 @@ typedef struct s_point
 
 typedef struct s_line
 {
-	int col;
-	int row;
-	int len;
-	int index;
-	int i;
-	int *tabl;
-	int t_len;
-	t_point c_o;
-	t_point c_v;
-	int	b_line;
-	char *tmp;
+	t_point 	c_o;
+	t_point 	c_v;
+	int 		col;
+	int 		row;
+	int 		len;
+	int 		index;
+	int 		i;
+	int 		*tabl;
+	int 		c_len;
+	int			b_line;
 }				t_line;
 
 
-int get_oc(t_line *line);
-void ft_stock(char *str, t_node **list, t_line *line);
-int ft_output(int str);
-void cur_goto(t_line *line, int cursor);
-void ft_alt_rth(char *str, t_line *line, int *cursor);
-void ft_alt_lft(char *str, t_line *line, int *cursor);
-void ft_clearline(char *str, int cursor, t_line *line);
-void ft_printnbl(char **str, t_line *line, t_init *init, int *cursor,char c);
-void ft_delet(char **str, t_line *line, int *cursor);
-void ft_next(t_node **head, t_node **list, int *cursor, char **str, t_line *line);
-void ft_prev(t_node **head, t_node **list, int *cursor, char **str, t_line *line);
-void get_cursor_position(t_line *line);
-void ft_end(t_node **list, t_node **head, t_line *line, char **str, int *cursor);
-void print_porompte(int *cursor, t_line *line);
-void       move_left(t_line *line,int *cursor);
-void       move_right(t_line *line,int *cursor);
-void        home_deep(t_line *line,t_init *init,int *cursor);
-void        esc(void);
-void ft_multi(char **str,t_line *line, int *cursor,char **tmp);
-void		multilne(char *str,t_line *line);
-void       move_up(t_line *line,int *cursor);
-void       move_down(t_line *line,int *cursor);
-void move_cursor_v(t_line *line);
-
+int		get_oc(t_line *line);
+void	ft_stock(char *str, t_node **list, t_line *line);
+int		ft_output(int str);
+void	cur_goto(t_line *line, int cursor);
+void	ft_alt_rth(char *str, t_line *line, int *cursor);
+void	ft_alt_lft(char *str, t_line *line, int *cursor);
+void	ft_clearline(char *str, int cursor, t_line *line);
+void	ft_printnbl(char **str, t_line *line, t_init *init, int *cursor,char c);
+void	ft_delet(char **str, t_line *line, int *cursor);
+void	ft_next(t_node **head, t_node **list, int *cursor, char **str, t_line *line);
+void	ft_prev(t_node **head, t_node **list, int *cursor, char **str, t_line *line);
+void	get_cursor_position(t_line *line);
+void	ft_end(t_node **list, t_node **head, t_line *line, char **str, int *cursor);
+void	print_porompte(int *cursor, t_line *line);
+void	move_left(t_line *line,int *cursor);
+void	move_right(t_line *line,int *cursor);
+void	home_deep(t_line *line,t_init *init,int *cursor, char *str);
+void	esc(void);
+void	ft_multi(char **str,t_line *line, int *cursor,char **tmp);
+void	multilne(char *str,t_line *line);
+void	move_up(t_line *line,int *cursor);
+void	move_down(t_line *line,int *cursor);
+void	move_cursor_v(t_line *line);
+int		count_len(t_line *line);

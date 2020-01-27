@@ -42,7 +42,7 @@ void ft_next(t_node **head, t_node **list, int *cursor, char **str, t_line *line
 		*str = ft_strdup((*list)->content);
 		line->index = (*list)->index;
 		line->tabl = (*list)->tabl;
-		line->t_len = (*list)->b_line;
+		line->c_len = (*list)->b_line;
 		line->i = line->index;
 		move_cursor_v(line);
 		cur_goto(line, *cursor);
@@ -65,7 +65,7 @@ void ft_prev(t_node **head, t_node **list, int *cursor, char **str, t_line *line
 		*str = ft_strdup((*list)->content);
 		line->index = (*list)->index;
 		line->tabl = (*list)->tabl;
-		line->t_len = (*list)->b_line;
+		line->c_len = (*list)->b_line;
 		line->i = line->index;
 		move_cursor_v(line);
 		cur_goto(line, *cursor);
@@ -96,7 +96,7 @@ void ft_end(t_node **list, t_node **head, t_line *line, char **str, int *cursor)
 	ft_strdel(str);
 	line->len = 0;
 	line->tabl = 0;
-	line->t_len = 0;
+	line->c_len = 0;
 	line->b_line = 0;
 	print_porompte(cursor, line);
 }
