@@ -83,8 +83,6 @@ typedef struct s_line
 	int			b_line;
 }				t_line;
 
-
-int		get_oc(t_line *line);
 void	ft_stock(char *str, t_node **list, t_line *line);
 int		ft_output(int str);
 void	cur_goto(t_line *line, int cursor);
@@ -108,3 +106,5 @@ void	move_up(t_line *line,int *cursor);
 void	move_down(t_line *line,int *cursor);
 void	move_cursor_v(t_line *line);
 int		count_len(t_line *line);
+int		count_row(t_line *line);
+void	ft_update_cursor_o(t_line *line);

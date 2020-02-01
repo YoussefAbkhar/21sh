@@ -35,17 +35,17 @@ void ft_next(t_node **head, t_node **list, int *cursor, char **str, t_line *line
 		tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
 		tputs(tgetstr("cd", 0), 0, ft_output);
 		ft_putstr((*list)->content);
-		line->len = ((*list)->prev) ? (*list)->tabl[(*list)->index] : (*list)->len;
+		line->len = (*list)->tabl[(*list)->index];     
 		line->b_line = (*list)->b_line;
 		ft_strdel(str);
 		*cursor = line->len;
-		*str = ft_strdup((*list)->content);
 		line->index = (*list)->index;
 		line->tabl = (*list)->tabl;
 		line->c_len = (*list)->b_line;
 		line->i = line->index;
 		move_cursor_v(line);
 		cur_goto(line, *cursor);
+		*str = ft_strdup((*list)->content);
 	}
 }
 
@@ -58,17 +58,20 @@ void ft_prev(t_node **head, t_node **list, int *cursor, char **str, t_line *line
 		tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
 		tputs(tgetstr("cd", 0), 0, ft_output);
 		ft_putstr((*list)->content);
-		line->len = ((*list)->prev) ? (*list)->tabl[(*list)->index] : (*list)->b_line;
-		line->b_line = (*list)->len;
+		if ((*list)->tabl)
+			line->len = ((*list)->tabl[(*list)->index]);
+		else
+			line->len = 0;
+		line->b_line = (*list)->b_line;
 		ft_strdel(str);
 		*cursor = line->len;
-		*str = ft_strdup((*list)->content);
 		line->index = (*list)->index;
 		line->tabl = (*list)->tabl;
 		line->c_len = (*list)->b_line;
 		line->i = line->index;
 		move_cursor_v(line);
 		cur_goto(line, *cursor);
+		*str = ft_strdup((*list)->content);
 	}
 	else
 		ft_putstr(tgetstr("bl", NULL));

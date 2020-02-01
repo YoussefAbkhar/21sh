@@ -12,6 +12,29 @@
 
 #include "21sh.h"
 
+int count_row(t_line *line)
+{
+	int i;
+	int y;
+
+	y = 0;
+	i = line->index;
+	while (i >= 0 && line->tabl)
+	{
+		y += ((line->c_v.x + line->tabl[i] + (i == line->index)) / line->col);
+		if ((line->c_v.x + line->tabl[i] + (i == line->index)) % line->col > 0)
+			y += 1;
+		i--;
+	}
+	return (y);
+}
+
+void	ft_update_cursor_o(t_line *line)
+{
+	if ((line->c_o.y + count_row(line) - line->row > 0))
+		line->c_o.y -= ((line->c_o.y + count_row(line) - line->row));
+}
+
 void    ft_clearline(char *str,int cursor,t_line *line)
 {
 	cur_goto(line,0);
@@ -125,10 +148,7 @@ void    ft_printnbl(char **str,t_line *line, t_init *init,int *cursor,char c)
 	}
 	else
 		(*cursor)++;
+	line->b_line++;
 	multilne(*str,line);
 	line->c_len++;
-	line->b_line++;
-	tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
-	tputs(tgetstr("cd", 0), 0, ft_output);
-	ft_putstr(*str);
 }

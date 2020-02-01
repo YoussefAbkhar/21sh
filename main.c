@@ -18,11 +18,6 @@ int ft_output(int str)
 	return (0);
 }
 
-int get_oc(t_line *line)
-{
-	return(line->c_o.y * line->col + line->c_o.x - 1);
-}
-
 void cur_goto(t_line *line, int cursor)
 {
 	int x;
@@ -48,11 +43,11 @@ void get_cursor_position(t_line *line)
 	line->c_v = line->c_o;
 }
 
-void ft_putstr4(char *s, char *s1, char *s2)
+
+void ft_put_multistring(char **strings)
 {
-	ft_putstr(s);
-	ft_putstr(s1);
-	ft_putstr(s2);
+	while(*strings)
+		ft_putstr(*strings++);
 }
 
 void ft_porompte(void)
@@ -60,27 +55,22 @@ void ft_porompte(void)
 	char cwd[256];
 	char *cwd1;
 	char *str1;
-	char git[15];
-
-	ft_strcpy(git, "git branch");
 	if (getcwd(cwd, sizeof(cwd)))
 		cwd1 = getcwd(cwd, sizeof(cwd));
 	else
 	{
-		ft_putstr4("\033[1;33m", " 😡 permission denied \n", "\033[0m");
+		ft_put_multistring((char *[]){"\033[1;33m", " 😡 permission denied ", "\n", "\033[0m",0});
 		exit(1);
 	}
 	if (ft_strcmp(cwd1, "/") == 0)
 	{
-		ft_putstr4("\033[1;33m😜", cwd1, " $> \033[0m");
+		ft_put_multistring((char *[]){"\033[1;33m", "😜 ", cwd1, " $> \033[0m",0});
 		return;
 	}
 	str1 = ft_strrchr(cwd1, '/');
-
-	ft_putstr4("\033[1;32m➜  \033[1;36m",str1 + 1, " git:");
-	system(git);	
-	ft_putstr("\033[0m");
+	ft_put_multistring((char *[]){"\033[1;32m➜ ","\033[1;36m ", str1 + 1, " $>\033[0m",0});
 }
+
 void ft_init(t_line *line)
 {
 	char buf[1024];
@@ -113,6 +103,23 @@ void print_porompte(int *cursor, t_line *line)
 	*cursor = 0;
 	tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
 }
+
+// char *remove_non_printable(char *str)
+// {
+// 	int i;
+// 	int j;
+
+// 	i = 0;
+// 	j = 0;
+// 	while (str[i])
+// 	{
+// 		if (ft_isprint(str[i]) || str[i] == '\n')
+// 			str[j++] = str[i];
+// 		i++;
+// 	}
+// 	str[j] = 0;
+// 	return(str);
+// }
 
 int main()
 {
@@ -151,7 +158,7 @@ int main()
 			{
 				tputs(tgoto(tgetstr("cm", 0), line.c_o.x, line.c_o.y), 0, ft_output);
 				tputs(tgetstr("cd", 0), 0, ft_output);
-				ft_putchar(str[cursor]);
+				ft_putnbr(count_row(&line));
 			}
 			else if (init.r == LEFT)
 				move_left(&line,&cursor);
@@ -180,12 +187,14 @@ int main()
 			else
 			{
 				i = -1;
-				while (buff[++i] && (ft_isprint(buff[i]) || buff[i] == '\n' || buff[i] == '\t'))
-				{
-					if (buff[i] == '\t')
-						continue;
-					ft_printnbl(&str, &line, &init, &cursor,buff[i]);
-				}
+				while (buff[++i])
+					if (ft_isprint(buff[i]) || buff[i] == '\n')
+						ft_printnbl(&str, &line, &init, &cursor,buff[i]);
+				tputs(tgoto(tgetstr("cm", 0), line.c_o.x, line.c_o.y), 0, ft_output);
+				tputs(tgetstr("cd", 0), 0, ft_output);
+				ft_putstr(str);
+				//ft_putstr(" ");
+				// ft_update_cursor_o(&line);
 				move_cursor_v(&line);
 				cur_goto(&line, cursor);
 				i = 0;

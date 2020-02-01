@@ -90,4 +90,5 @@ void				ft_putnbr(int n);
 void				ft_putnbr_fd(int n, int fd);
 int					ft_lstlen(t_list *lst);
 void				ft_del(void *content, size_t content_size);
+void				ft_put_multistring(char **strings);
 #endif

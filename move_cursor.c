@@ -22,7 +22,7 @@ void move_cursor_v(t_line *line)
 	{
 		i--;
 		point.y += line->tabl[i] / line->col;
-		if (line->tabl[i] % line->col > 0)
+		if (line->tabl[i] % line->col >= 0)
 			point.y += 1;
 		point.x = 0;
 	}
@@ -39,7 +39,7 @@ int count_len(t_line *line)
 	while (i > 0)
 	{
 		i--;
-		k += line->tabl[i] ;
+		k += line->tabl[i];
 	}
 	return(k);
 }
@@ -178,10 +178,10 @@ void		ft_allocate_table(t_line *line,char *str)
 
 void 		multilne(char *str,t_line *line)
 {
-	if (line->tabl)
-		free(line->tabl);
+	// if (line->tabl)
+	// 	ft_memdel((void **)&line->tabl);
 	line->len = 0;
 	line->index = 0;
-	ft_allocate_table(line,str);
+	ft_allocate_table(line, str);
 	line->len = line->tabl[line->i];
 }
