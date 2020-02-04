@@ -31,10 +31,16 @@ void cur_goto(t_line *line, int cursor)
 void get_cursor_position(t_line *line)
 {
 	char *buff;
-
+	int i = 0;
 	buff = (char[20]){0};
-	ft_putstr_fd("\e[6n", 0);
-	read(0, buff, 20);
+	while (1)
+	{
+		ft_putstr_fd("\e[6n", 0);
+		i = read(0, buff, 20);
+		buff[i] = 0;
+		if (ft_strchr(buff,'['))
+			break;
+	}
 	line->c_o.y = ft_atoi(buff + 2) - 1;
 	if ((buff = (char *)ft_strchr(buff, ';')))
 		line->c_o.x = ft_atoi(buff + 1);
@@ -42,7 +48,6 @@ void get_cursor_position(t_line *line)
 		line->c_o.x = 0;
 	line->c_v = line->c_o;
 }
-
 
 void ft_put_multistring(char **strings)
 {
@@ -104,22 +109,16 @@ void print_porompte(int *cursor, t_line *line)
 	tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
 }
 
-// char *remove_non_printable(char *str)
-// {
-// 	int i;
-// 	int j;
-
-// 	i = 0;
-// 	j = 0;
-// 	while (str[i])
-// 	{
-// 		if (ft_isprint(str[i]) || str[i] == '\n')
-// 			str[j++] = str[i];
-// 		i++;
-// 	}
-// 	str[j] = 0;
-// 	return(str);
-// }
+void print_line(char *str)
+{
+	while(*str)
+	{
+		ft_putchar(*str);
+		if(str[1] == '\n' || str[1] == '\0')
+			ft_putchar(' ');
+		str++;
+	}
+}
 
 int main()
 {
@@ -154,13 +153,7 @@ int main()
 		if (read(0, buff, 1023) > 0)
 		{
 			init.r = (int)*((int *)buff);
-			if (init.r == ESC)
-			{
-				tputs(tgoto(tgetstr("cm", 0), line.c_o.x, line.c_o.y), 0, ft_output);
-				tputs(tgetstr("cd", 0), 0, ft_output);
-				ft_putnbr(count_row(&line));
-			}
-			else if (init.r == LEFT)
+			if (init.r == LEFT)
 				move_left(&line,&cursor);
 			else if (init.r == RIGHT)
 				move_right(&line,&cursor);
@@ -192,10 +185,8 @@ int main()
 						ft_printnbl(&str, &line, &init, &cursor,buff[i]);
 				tputs(tgoto(tgetstr("cm", 0), line.c_o.x, line.c_o.y), 0, ft_output);
 				tputs(tgetstr("cd", 0), 0, ft_output);
-				ft_putstr(str);
-				//ft_putstr(" ");
-				// ft_update_cursor_o(&line);
-				move_cursor_v(&line);
+				print_line(str);
+				ft_update_cursor_o(&line);
 				cur_goto(&line, cursor);
 				i = 0;
 			}

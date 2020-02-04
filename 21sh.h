@@ -42,6 +42,9 @@
 #define page_down 2117491483
 #define page_up 2117425947
 
+int g_col;
+int g_row;
+
 typedef struct s_init
 {
 	int k;

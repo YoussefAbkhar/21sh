@@ -1,0 +1,16 @@
+else if (init.r == page_up)
+move_up(&line,&cursor);
+else if (init.r == HOME || init.r == DEEP)
+home_deep(&line,&init,&cursor,str);
+else if (init.r == END && str)
+ft_end(&list, &head, &line, &str, &cursor);
+else if (init.r == END && !str)
+print_porompte(&cursor, &line);
+else if (init.r == UP)
+ft_next(&head, &list, &cursor, &str, &line);
+else if (init.r == DOWN)
+ft_prev(&head, &list, &cursor, &str, &line);
+else if (init.r == alt_rth)
+ft_alt_rth(str, &line, &cursor);
+else if (init.r == alt_lft)
+ft_alt_lft(str, &line, &cursor);

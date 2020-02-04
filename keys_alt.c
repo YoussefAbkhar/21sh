@@ -17,14 +17,13 @@ int count_row(t_line *line)
 	int i;
 	int y;
 
-	y = 0;
-	i = line->index;
-	while (i >= 0 && line->tabl)
+	i = 0;
+	y = (line->c_o.x + line->tabl[0] + (i == line->index)) % line->col > 0;
+	y += (line->c_o.x + line->tabl[0] + (i == line->index)) / line->col;
+	while (++i <= line->index && line->tabl)
 	{
-		y += ((line->c_v.x + line->tabl[i] + (i == line->index)) / line->col);
-		if ((line->c_v.x + line->tabl[i] + (i == line->index)) % line->col > 0)
-			y += 1;
-		i--;
+		y += ((line->tabl[i] + (i == line->index)) % line->col) > 0;
+		y += ((line->tabl[i] + (i == line->index)) / line->col);
 	}
 	return (y);
 }
@@ -32,7 +31,10 @@ int count_row(t_line *line)
 void	ft_update_cursor_o(t_line *line)
 {
 	if ((line->c_o.y + count_row(line) - line->row > 0))
+	{
 		line->c_o.y -= ((line->c_o.y + count_row(line) - line->row));
+		move_cursor_v(line);
+	}
 }
 
 void    ft_clearline(char *str,int cursor,t_line *line)
@@ -45,7 +47,7 @@ void    ft_clearline(char *str,int cursor,t_line *line)
 
 void    ft_alt_rth(char *str,t_line *line, int *cursor)
 {
-	if ((*cursor) < line->len)
+	if ((*cursor) < line->tabl[line->i])
 	{
 		while (str[(*cursor)])
 		{
@@ -135,10 +137,9 @@ void ft_print(char **str,char *c, int cursor,t_line *line)
 
 void    ft_printnbl(char **str,t_line *line, t_init *init,int *cursor,char c)
 {
-	init->c[1] ='\0';
-	init->c[0] = c;
+	ft_strcpy(init->c,(char []){c, 0});
 	if (!(*str))
-		(*str) = ft_strdup("\0");
+		(*str) = ft_strdup("");
 	ft_print(str,init->c, line->c_len,line);
 	line->len++;
 	if (c == '\n')

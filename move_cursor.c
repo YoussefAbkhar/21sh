@@ -22,7 +22,7 @@ void move_cursor_v(t_line *line)
 	{
 		i--;
 		point.y += line->tabl[i] / line->col;
-		if (line->tabl[i] % line->col >= 0)
+		if (line->tabl[i] % line->col > 0)
 			point.y += 1;
 		point.x = 0;
 	}
