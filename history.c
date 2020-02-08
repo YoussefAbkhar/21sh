@@ -12,7 +12,7 @@
 
 #include "21sh.h"
 
-void ft_next(t_node **head, t_node **list, int *cursor, char **str, t_line *line)
+void ft_next(t_node **head, t_node **list, char **str, t_line *line)
 {
 	if (!(*list) && (*head))
 	{
@@ -34,22 +34,22 @@ void ft_next(t_node **head, t_node **list, int *cursor, char **str, t_line *line
 	{
 		tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
 		tputs(tgetstr("cd", 0), 0, ft_output);
-		ft_putstr((*list)->content);
 		line->len = (*list)->tabl[(*list)->index];     
-		line->b_line = (*list)->b_line;
+		line->b_line = (*list)->b_line;//debut fonction wahda 1 
 		ft_strdel(str);
-		*cursor = line->len;
+		line->cursor = line->len;
 		line->index = (*list)->index;
 		line->tabl = (*list)->tabl;
 		line->c_len = (*list)->b_line;
 		line->i = line->index;
-		move_cursor_v(line);
-		cur_goto(line, *cursor);
-		*str = ft_strdup((*list)->content);
+		print_line((*list)->content);
+		ft_update_cursor_o(line);
+		cur_goto(line, line->cursor);
+		*str = ft_strdup((*list)->content);//fin fonction wahda 1
 	}
 }
 
-void ft_prev(t_node **head, t_node **list, int *cursor, char **str, t_line *line)
+void ft_prev(t_node **head, t_node **list, char **str, t_line *line)
 {
 	if ((*list))
 		(*list) = (*list)->prev;
@@ -57,21 +57,21 @@ void ft_prev(t_node **head, t_node **list, int *cursor, char **str, t_line *line
 	{
 		tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
 		tputs(tgetstr("cd", 0), 0, ft_output);
-		ft_putstr((*list)->content);
 		if ((*list)->tabl)
 			line->len = ((*list)->tabl[(*list)->index]);
 		else
 			line->len = 0;
-		line->b_line = (*list)->b_line;
+		line->b_line = (*list)->b_line;//debut fonction wahda 2
 		ft_strdel(str);
-		*cursor = line->len;
+		line->cursor = line->len;
 		line->index = (*list)->index;
 		line->tabl = (*list)->tabl;
 		line->c_len = (*list)->b_line;
 		line->i = line->index;
-		move_cursor_v(line);
-		cur_goto(line, *cursor);
-		*str = ft_strdup((*list)->content);
+		print_line((*list)->content);
+		ft_update_cursor_o(line);
+		cur_goto(line, line->cursor);
+		*str = ft_strdup((*list)->content);//fin fonction wahda 1
 	}
 	else
 		ft_putstr(tgetstr("bl", NULL));
@@ -85,7 +85,7 @@ void ft_prev(t_node **head, t_node **list, int *cursor, char **str, t_line *line
 	}
 }
 
-void ft_end(t_node **list, t_node **head, t_line *line, char **str, int *cursor)
+void ft_end(t_node **list, t_node **head, t_line *line, char **str)
 {
 	if ((*list) && (*list)->prev)
 	{
@@ -97,9 +97,5 @@ void ft_end(t_node **list, t_node **head, t_line *line, char **str, int *cursor)
 	ft_stock(*str, head, line);
 	(*list) = NULL;
 	ft_strdel(str);
-	line->len = 0;
-	line->tabl = 0;
-	line->c_len = 0;
-	line->b_line = 0;
-	print_porompte(cursor, line);
+	print_porompte(line);
 }

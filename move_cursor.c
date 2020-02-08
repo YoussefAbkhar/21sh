@@ -45,45 +45,45 @@ int count_len(t_line *line)
 }
 
 
-void       move_right(t_line *line, int *cursor)
+void       move_right(t_line *line)
 {
- 	if ((*cursor) < line->len - (line->i != line->index))
+ 	if (line->cursor < line->len - (line->i != line->index))
 	{
-		(*cursor)++;
-		cur_goto(line, (*cursor));
+		line->cursor++;
+		cur_goto(line, line->cursor);
 		line->c_len++;
 	}
-	else if ((*cursor) == line->len - 1  && line->index > 0 && line->index > line->i)
+	else if (line->cursor == line->len - 1  && line->index > 0 && line->index > line->i)
 	{
 		line->i++;
 		line->len = line->tabl[line->i];
 		move_cursor_v(line);
-		(*cursor) = 0;
-		cur_goto(line, (*cursor));
+		line->cursor = 0;
+		cur_goto(line, line->cursor);
 		line->c_len++;
 	}
 }
 
-void       move_left(t_line *line,int *cursor)
+void       move_left(t_line *line)
 {
-    if ((*cursor) > 0)
+    if (line->cursor > 0)
 	{
-		(*cursor)--;
-		cur_goto(line, (*cursor));
+		line->cursor--;
+		cur_goto(line, line->cursor);
 		line->c_len--;
 	}
-	else if ((*cursor) == 0 && line->index > 0 && line->i > 0)
+	else if (line->cursor == 0 && line->index > 0 && line->i > 0)
 	{
 		line->i--;
 		line->len = line->tabl[line->i];
-		(*cursor) = line->len - 1;
+		line->cursor = line->len - 1;
 		move_cursor_v(line);
-		cur_goto(line, (*cursor));
+		cur_goto(line, line->cursor);
 		line->c_len--;
 	}
 }
 
-void       move_up(t_line *line,int *cursor)
+void       move_up(t_line *line)
 {
 
 	if (line->i > 0)
@@ -91,50 +91,50 @@ void       move_up(t_line *line,int *cursor)
 		line->i--;
 		line->len = line->tabl[line->i];
 		move_cursor_v(line);
-		if ((*cursor) > line->len - 1)
-			(*cursor) = line->len - 1;
+		if (line->cursor > line->len - 1)
+			line->cursor = line->len - 1;
 		if (line->i == 0)
-			tputs(tgoto(tgetstr("cm", 0), line->c_o.x + (*cursor),line->c_v.y), 0, ft_output);
+			tputs(tgoto(tgetstr("cm", 0), line->c_o.x + line->cursor,line->c_v.y), 0, ft_output);
 		else
-			tputs(tgoto(tgetstr("cm", 0), (*cursor) ,line->c_v.y), 0, ft_output);
-		line->c_len = (count_len(line) + (*cursor));
+			tputs(tgoto(tgetstr("cm", 0), line->cursor ,line->c_v.y), 0, ft_output);
+		line->c_len = (count_len(line) + line->cursor);
 	}
 }
 
-void       move_down(t_line *line,int *cursor)
+void       move_down(t_line *line)
 {
 	if (line->i < line->index)
 	{
 		line->i++;
 		line->len = line->tabl[line->i];
 		move_cursor_v(line);
-		if ((*cursor) > line->len - 1)
-			(*cursor) = line->len - 1;
-		tputs(tgoto(tgetstr("cm", 0), (*cursor) ,line->c_v.y), 0, ft_output);
-		line->c_len = (count_len(line) + (*cursor));
+		if (line->cursor > line->len - 1)
+			line->cursor = line->len - 1;
+		tputs(tgoto(tgetstr("cm", 0), line->cursor ,line->c_v.y), 0, ft_output);
+		line->c_len = (count_len(line) + line->cursor);
 	}
 }
 
-void        home_deep(t_line *line,t_init *init,int *cursor, char *str)
+void        home_deep(t_line *line,t_init *init, char *str)
 {
-    if (init->r == HOME)
+    if (str && init->r == HOME)
 	{
 		line->c_v = line->c_o;
 		line->i = 0;
 		line->c_len = 0;
-		(*cursor) = 0;
+		line->cursor = 0;
 		line->len = line->tabl[line->i];
 		tputs(tgoto(tgetstr("cm", 0), line->c_v.x, line->c_v.y), 0, ft_output);
 	}
-	else if (init->r == DEEP)
+	else if (str && init->r == DEEP)
 	{
 		line->b_line = ft_strlen(str);
 		line->i = line->index;
 		line->c_len = line->b_line;
 		line->len = line->tabl[line->i];
-		(*cursor) = line->len;
+		line->cursor = line->len;
 		move_cursor_v(line);
-		tputs(tgoto(tgetstr("cm", 0), (line->c_v.x + *cursor) % line->col, (line->c_v.y + (line->c_v.x + *cursor) / line->col)), 0, ft_output);
+		tputs(tgoto(tgetstr("cm", 0), (line->c_v.x + line->cursor) % line->col, (line->c_v.y + (line->c_v.x + line->cursor) / line->col)), 0, ft_output);
 	}
 }
 
@@ -143,7 +143,12 @@ void        esc(void)
     struct termios config;
 	config.c_lflag |= (ECHO | ICANON);
 	tputs(tgetstr("me", 0), 0, ft_output);
-	exit(1);
+}
+void        esc1(void)
+{
+    struct termios config;
+	config.c_lflag &= ~(ECHO | ICANON);
+	tputs(tgetstr("me", 0), 0, ft_output);
 }
 
 void		ft_stock_totable(t_line *line,char *str)

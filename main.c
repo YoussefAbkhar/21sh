@@ -35,8 +35,8 @@ void get_cursor_position(t_line *line)
 	buff = (char[20]){0};
 	while (1)
 	{
-		ft_putstr_fd("\e[6n", 0);
-		i = read(0, buff, 20);
+		ft_putstr_fd("\e[6n", 2);
+		i = read(2, buff, 20);
 		buff[i] = 0;
 		if (ft_strchr(buff,'['))
 			break;
@@ -95,23 +95,27 @@ void ft_init(t_line *line)
 	line->tabl = 0;
 }
 
-void print_porompte(int *cursor, t_line *line)
+void print_porompte(t_line *line)
 {
 	int i = line->index - line->i;
-	while (i-- > 0)
+	while (--i > 0)
 		write(1, "\n", 1);
+	write(1, "\n", 1);
 	line->index = 0;
 	line->i = 0;
-	write(1, "\n", 1);
+	line->tabl = 0;
+	line->len = 0;
+	line->c_len = 0;
+	line->b_line = 0;
+	line->cursor = 0;
 	ft_porompte();
 	get_cursor_position(line);
-	*cursor = 0;
 	tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
 }
 
 void print_line(char *str)
 {
-	while(*str)
+	while(str && *str)
 	{
 		ft_putchar(*str);
 		if(str[1] == '\n' || str[1] == '\0')
@@ -127,9 +131,7 @@ int main()
 	t_node *list, *head;
 	char buff[1024];
 	list = NULL;
-	int cursor;
 	line.len = 0;
-	cursor = 0;
 	init.k = 1;
 	int i;
 	char *str;
@@ -143,10 +145,10 @@ int main()
 			ft_porompte();
 			get_cursor_position(&line);
 			cur_goto(&line, 0);
-			cursor = 0;
 			init.k = -1;
 			line.c_len = 0;
 			line.b_line = 0;
+			line.cursor = 0;
 		}
 		init.r = 0;
 		ft_bzero(buff, 1024);
@@ -154,40 +156,45 @@ int main()
 		{
 			init.r = (int)*((int *)buff);
 			if (init.r == LEFT)
-				move_left(&line,&cursor);
+				move_left(&line);
 			else if (init.r == RIGHT)
-				move_right(&line,&cursor);
+				move_right(&line);
 			else if (init.r == DEL)
-				ft_delet(&str, &line, &cursor);
+				ft_delet(&str, &line);
+			else if (init.r == CTL_D)
+			{
+				if (!line.b_line)
+					return (0);
+			}
 			else if (init.r == page_down)
-				move_down(&line,&cursor);
+				move_down(&line);
 			else if (init.r == page_up)
-				move_up(&line,&cursor);
+				move_up(&line);
 			else if (init.r == HOME || init.r == DEEP)
-				home_deep(&line,&init,&cursor,str);
+				home_deep(&line,&init,str);
 			else if (init.r == END && str)
-				ft_end(&list, &head, &line, &str, &cursor);
+				ft_end(&list, &head, &line, &str);
 			else if (init.r == END && !str)
-				print_porompte(&cursor, &line);
+				print_porompte(&line);
 			else if (init.r == UP)
-				ft_next(&head, &list, &cursor, &str, &line);
+				ft_next(&head, &list, &str, &line);
 			else if (init.r == DOWN)
-				ft_prev(&head, &list, &cursor, &str, &line);
+				ft_prev(&head, &list, &str, &line);
 			else if (init.r == alt_rth)
-				ft_alt_rth(str, &line, &cursor);
+				ft_alt_rth(str, &line);
 			else if (init.r == alt_lft)
-				ft_alt_lft(str, &line, &cursor);
+				ft_alt_lft(str, &line);
 			else
 			{
 				i = -1;
 				while (buff[++i])
 					if (ft_isprint(buff[i]) || buff[i] == '\n')
-						ft_printnbl(&str, &line, &init, &cursor,buff[i]);
+						ft_printnbl(&str, &line, &init,buff[i]);
 				tputs(tgoto(tgetstr("cm", 0), line.c_o.x, line.c_o.y), 0, ft_output);
 				tputs(tgetstr("cd", 0), 0, ft_output);
 				print_line(str);
 				ft_update_cursor_o(&line);
-				cur_goto(&line, cursor);
+				cur_goto(&line,line.cursor);
 				i = 0;
 			}
 		}
