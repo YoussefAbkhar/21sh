@@ -45,8 +45,10 @@ int count_len(t_line *line)
 }
 
 
-void       move_right(t_line *line)
+void       move_right(t_line *line,char *str)
 {
+	if (line->slct)
+		ft_select(line, str);
  	if (line->cursor < line->len - (line->i != line->index))
 	{
 		line->cursor++;
@@ -64,8 +66,10 @@ void       move_right(t_line *line)
 	}
 }
 
-void       move_left(t_line *line)
+void       move_left(t_line *line, char *str)
 {
+	if (line->slct && line->cursor >= 0)
+		ft_select(line, str);
     if (line->cursor > 0)
 	{
 		line->cursor--;
@@ -85,7 +89,6 @@ void       move_left(t_line *line)
 
 void       move_up(t_line *line)
 {
-
 	if (line->i > 0)
 	{
 		line->i--;

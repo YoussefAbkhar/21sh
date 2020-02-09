@@ -41,7 +41,9 @@
 #define alt_up 1096489755
 #define page_down 2117491483
 #define page_up 2117425947
-#define CTL_D 4
+#define ALT_D 4
+#define ALT_S 40899
+
 
 int g_col;
 int g_row;
@@ -86,6 +88,10 @@ typedef struct s_line
 	int 		*tabl;
 	int 		c_len;
 	int			b_line;
+	int			slct;
+	int			slctd;
+	int			slctf;
+	char		*sltstr;
 }				t_line;
 
 void	ft_stock(char *str, t_node **list, t_line *line);
@@ -100,8 +106,8 @@ void	ft_prev(t_node **head, t_node **list, char **str, t_line *line);
 void	get_cursor_position(t_line *line);
 void	ft_end(t_node **list, t_node **head, t_line *line, char **str);
 void	print_porompte(t_line *line);
-void	move_left(t_line *line);
-void	move_right(t_line *line);
+void	move_left(t_line *line, char *str);
+void	move_right(t_line *line, char *str);
 void	home_deep(t_line *line,t_init *init, char *str);
 void	esc(void);
 void	esc1(void);
@@ -115,3 +121,6 @@ int		count_len(t_line *line);
 int		count_row(t_line *line);
 void	ft_update_cursor_o(t_line *line);
 void	print_line(char *str);
+void    ft_select(t_line *line, char *str);
+void    ft_unselect(t_line *line,char *str);
+void	ft_chack_selction(t_line *line, char *str);

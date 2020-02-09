@@ -14,7 +14,7 @@ NAME = 21sh
 
 CFLAGS = -g -Wall -Werror -Wextra
 
-SRCS = main.c add_node_tohistory.c keys_alt.c history.c move_cursor.c
+SRCS = main.c add_node_tohistory.c keys_alt.c history.c move_cursor.c selection.c
 
 LIBFT = libft/libft.a
 
