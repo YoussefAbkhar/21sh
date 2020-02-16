@@ -39,12 +39,12 @@ int count_row(t_line *line)
 	int y;
 
 	i = 0;
-	y = (line->c_o.x + line->tabl[0] + (i == line->index)) % line->col > 0;
-	y += (line->c_o.x + line->tabl[0] + (i == line->index)) / line->col;
+	y = (line->c_o.x + line->tabl[0] + (line->index == i)) % line->col > 0;
+	y += (line->c_o.x + line->tabl[0] + (line->index == i)) / line->col;
 	while (++i <= line->index && line->tabl)
 	{
-		y += ((line->tabl[i] + (i == line->index)) % line->col) > 0;
-		y += ((line->tabl[i] + (i == line->index)) / line->col);
+		y += ((line->tabl[i] + (line->index == i)) % line->col) > 0;
+		y += ((line->tabl[i] + (line->index == i)) / line->col);
 	}
 	return (y);
 }
@@ -127,7 +127,7 @@ void	ft_delet(char **str,t_line *line)
 		ft_strdel(&tmp1);
 		tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
 		tputs(tgetstr("cd", 0), 0, ft_output);
-		ft_putstr(*str);
+		print_line(*str);
 		line->b_line--;
 		line->len--;
 		line->c_len--;

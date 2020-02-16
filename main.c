@@ -86,7 +86,11 @@ void ft_init(t_line *line)
 	config.c_lflag &= ~(ECHO | ICANON);
 	if (tcsetattr(0, 0, &config) < 0)
 		ft_putstr_fd("error", 0);
-	tgetent(buf, getenv("TERM"));
+	if (tgetent(buf, getenv("TERM")) < 0)
+	{
+		ft_putstr_fd("error\n", 0);
+		exit(0);
+	}
 	ioctl(0, TIOCGWINSZ, &w);
 	line->col = w.ws_col;
 	line->row = w.ws_row;
@@ -109,6 +113,9 @@ void print_porompte(t_line *line)
 	line->c_len = 0;
 	line->b_line = 0;
 	line->cursor = 0;
+	line->slctd = 0;
+	line->slct = 0;
+	line->slctf = 0;
 	ft_porompte();
 	get_cursor_position(line);
 	tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
@@ -118,26 +125,34 @@ void print_line(char *str)
 {
 	while(str && *str)
 	{
-		ft_putchar(*str);
-		if(str[1] == '\n' || str[1] == '\0')
+		if (*str == '\n')
 			ft_putchar(' ');
+		ft_putchar(*str);
 		str++;
 	}
+	ft_putchar(' ');
 }
 
-// ft_print_print()
-// {
-// 	i = -1;
-// 				while (buff[++i])
-// 					if (ft_isprint(buff[i]) || buff[i] == '\n')
-// 						ft_printnbl(&str, &line, &init,buff[i]);
-// 				tputs(tgoto(tgetstr("cm", 0), line.c_o.x, line.c_o.y), 0, ft_output);
-// 				tputs(tgetstr("cd", 0), 0, ft_output);
-// 				print_line(str);
-// 				ft_update_cursor_o(&line);
-// 				cur_goto(&line,line.cursor);
-// 				i = 0;
-// }
+
+void ft_clear(t_line *line,char *str)
+{
+	tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
+	tputs(tgetstr("cd", 0), 0, ft_output);
+	print_line(str);
+	ft_update_cursor_o(line);
+	cur_goto(line,line->cursor);
+}
+
+void ft_print_print(char **str,t_line *line, char *buff,t_init *init)
+{
+	int i;
+
+	i = -1;
+	while (buff[++i])
+		if (ft_isprint(buff[i]) || buff[i] == '\n')
+			ft_printnbl(str, line, init,buff[i]);
+	ft_clear(line,*str);
+}
 
 int main()
 {
@@ -148,12 +163,11 @@ int main()
 	list = NULL;
 	line.len = 0;
 	init.k = 1;
-	int i;
 	char *str;
 	str = NULL;
 	ft_init(&line);
 	head = list;
-	while (1)
+	while (TRUE)
 	{
 		if (init.k == 1)
 		{
@@ -172,53 +186,55 @@ int main()
 		ft_bzero(buff, 1024);
 		if (read(0, buff, 1023) > 0)
 		{
-			init.r = (int)*((int *)buff);
+			init.r = (*(int *)buff);
 			if (init.r == ESC)
-				ft_putstr(line.sltstr);
+			{
+				tputs(tgoto(tgetstr("cm", 0), line.c_o.x, line.c_o.y), 0, ft_output);
+				tputs(tgetstr("cd", 0), 0, ft_output);
+				ft_putnbr(count_row(&line));
+			}
 			else if (init.r == LEFT)
 				move_left(&line, str);
 			else if (init.r == RIGHT)
-				move_right(&line, str);
-			else if (init.r == DEL)
+				move_right(&line, str);		
+			else if (init.r == ALT_S)
+				ft_chack_selction(&line, str);
+			else if (init.r == ALT_V && line.sltstr)
+			{
+				line.slct = 0;
+				line.slctd = 0;
+				line.slctf = 0;
+				ft_print_print(&str, &line, line.sltstr, &init);
+			}
+			else if (init.r == ALT_C)
+				ft_copie(&line, str);
+			else if (init.r == page_down && line.slct == 0)
+				move_down(&line);
+			else if (init.r == page_up && line.slct == 0)
+				move_up(&line);
+			else if ((init.r == HOME || init.r == DEEP) && line.slct == 0)
+				home_deep(&line,&init,str);
+			else if (init.r == END && str && line.slct == 0)
+				ft_end(&list, &head, &line, &str);
+			else if (init.r == END && !str && line.slct == 0)
+				print_porompte(&line);
+			else if (init.r == UP && line.slct == 0)
+				ft_next(&head, &list, &str, &line);
+			else if (init.r == DOWN && line.slct == 0)
+				ft_prev(&head, &list, &str, &line);
+			else if (init.r == alt_rth && line.slct == 0)
+				ft_alt_rth(str, &line);
+			else if (init.r == alt_lft && line.slct == 0)
+				ft_alt_lft(str, &line);
+			else if (init.r == DEL && line.slct == 0)
 				ft_delet(&str, &line);
-			else if (init.r == ALT_D)
+			else if (init.r == ALT_D && line.slct == 0)
 			{
 				if (!line.b_line)
 					return (0);
 			}
-			else if (init.r == ALT_S)
-				ft_chack_selction(&line, str);
-			else if (init.r == page_down)
-				move_down(&line);
-			else if (init.r == page_up)
-				move_up(&line);
-			else if (init.r == HOME || init.r == DEEP)
-				home_deep(&line,&init,str);
-			else if (init.r == END && str)
-				ft_end(&list, &head, &line, &str);
-			else if (init.r == END && !str)
-				print_porompte(&line);
-			else if (init.r == UP)
-				ft_next(&head, &list, &str, &line);
-			else if (init.r == DOWN)
-				ft_prev(&head, &list, &str, &line);
-			else if (init.r == alt_rth)
-				ft_alt_rth(str, &line);
-			else if (init.r == alt_lft)
-				ft_alt_lft(str, &line);
-			else
-			{
-				i = -1;
-				while (buff[++i])
-					if (ft_isprint(buff[i]) || buff[i] == '\n')
-						ft_printnbl(&str, &line, &init,buff[i]);
-				tputs(tgoto(tgetstr("cm", 0), line.c_o.x, line.c_o.y), 0, ft_output);
-				tputs(tgetstr("cd", 0), 0, ft_output);
-				print_line(str);
-				ft_update_cursor_o(&line);
-				cur_goto(&line,line.cursor);
-				i = 0;
-			}
+			else if (line.slct == 0)
+				ft_print_print(&str,&line, buff,&init);
 		}
 	}
 	return (0);

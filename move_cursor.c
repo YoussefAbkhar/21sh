@@ -21,9 +21,18 @@ void move_cursor_v(t_line *line)
 	while (i > 0)
 	{
 		i--;
-		point.y += line->tabl[i] / line->col;
-		if (line->tabl[i] % line->col > 0)
-			point.y += 1;
+		if (i == 0)
+		{
+			point.y += ((line->tabl[i] + line->c_o.x) / line->col);
+			if (((line->tabl[i] + line->c_o.x) % line->col) > 0)
+				point.y += 1;
+		}
+		else
+		{
+			point.y += ((line->tabl[i]) / line->col);
+			if (((line->tabl[i]) % line->col) > 0)
+				point.y += 1;
+		}
 		point.x = 0;
 	}
 	line->c_v = point;
@@ -41,21 +50,25 @@ int count_len(t_line *line)
 		i--;
 		k += line->tabl[i];
 	}
-	return(k);
+	return (k);
 }
 
-
-void       move_right(t_line *line,char *str)
+void move_right(t_line *line, char *str)
 {
 	if (line->slct)
-		ft_select(line, str);
- 	if (line->cursor < line->len - (line->i != line->index))
+	{
+		if (line->slctd > line->c_len)
+			ft_unselect(line, str);
+		else if (line->slctd <= line->c_len)
+			ft_select(line, str);
+	}
+	if (line->cursor < line->len - (line->i != line->index))
 	{
 		line->cursor++;
 		cur_goto(line, line->cursor);
 		line->c_len++;
 	}
-	else if (line->cursor == line->len - 1  && line->index > 0 && line->index > line->i)
+	else if (line->cursor == line->len - 1 && line->index > 0 && line->index > line->i)
 	{
 		line->i++;
 		line->len = line->tabl[line->i];
@@ -66,11 +79,16 @@ void       move_right(t_line *line,char *str)
 	}
 }
 
-void       move_left(t_line *line, char *str)
+void move_left(t_line *line, char *str)
 {
-	if (line->slct && line->cursor >= 0)
-		ft_select(line, str);
-    if (line->cursor > 0)
+	if (line->slct && line->cursor > 0)
+	{
+		if (line->slctd >= line->c_len)
+			ft_select(line, str);
+		else if (line->slctd < line->c_len)
+			ft_unselect(line, str);
+	}
+	if (line->cursor > 0)
 	{
 		line->cursor--;
 		cur_goto(line, line->cursor);
@@ -87,7 +105,7 @@ void       move_left(t_line *line, char *str)
 	}
 }
 
-void       move_up(t_line *line)
+void move_up(t_line *line)
 {
 	if (line->i > 0)
 	{
@@ -97,14 +115,14 @@ void       move_up(t_line *line)
 		if (line->cursor > line->len - 1)
 			line->cursor = line->len - 1;
 		if (line->i == 0)
-			tputs(tgoto(tgetstr("cm", 0), line->c_o.x + line->cursor,line->c_v.y), 0, ft_output);
+			tputs(tgoto(tgetstr("cm", 0), line->c_o.x + line->cursor, line->c_v.y), 0, ft_output);
 		else
-			tputs(tgoto(tgetstr("cm", 0), line->cursor ,line->c_v.y), 0, ft_output);
+			tputs(tgoto(tgetstr("cm", 0), line->cursor, line->c_v.y), 0, ft_output);
 		line->c_len = (count_len(line) + line->cursor);
 	}
 }
 
-void       move_down(t_line *line)
+void move_down(t_line *line)
 {
 	if (line->i < line->index)
 	{
@@ -113,14 +131,14 @@ void       move_down(t_line *line)
 		move_cursor_v(line);
 		if (line->cursor > line->len - 1)
 			line->cursor = line->len - 1;
-		tputs(tgoto(tgetstr("cm", 0), line->cursor ,line->c_v.y), 0, ft_output);
+		tputs(tgoto(tgetstr("cm", 0), line->cursor, line->c_v.y), 0, ft_output);
 		line->c_len = (count_len(line) + line->cursor);
 	}
 }
 
-void        home_deep(t_line *line,t_init *init, char *str)
+void home_deep(t_line *line, t_init *init, char *str)
 {
-    if (str && init->r == HOME)
+	if (str && init->r == HOME)
 	{
 		line->c_v = line->c_o;
 		line->i = 0;
@@ -141,34 +159,21 @@ void        home_deep(t_line *line,t_init *init, char *str)
 	}
 }
 
-void        esc(void)
+void ft_stock_totable(t_line *line, char *str)
 {
-    struct termios config;
-	config.c_lflag |= (ECHO | ICANON);
-	tputs(tgetstr("me", 0), 0, ft_output);
-}
-void        esc1(void)
-{
-    struct termios config;
-	config.c_lflag &= ~(ECHO | ICANON);
-	tputs(tgetstr("me", 0), 0, ft_output);
-}
+	int k = 0;
+	int i = 0;
 
-void		ft_stock_totable(t_line *line,char *str)
-{
-	int k = 0;   
-    int i = 0;
-	
-    while (str && str[i])
-    {
+	while (str && str[i])
+	{
 		line->tabl[k]++;
-		if(str[i] == '\n')
+		if (str[i] == '\n')
 			k++;
-        i++;
-    }
+		i++;
+	}
 }
 
-void		ft_allocate_table(t_line *line,char *str)
+void ft_allocate_table(t_line *line, char *str)
 {
 	int i = 0;
 	if (str)
@@ -176,15 +181,15 @@ void		ft_allocate_table(t_line *line,char *str)
 		while (str[i])
 		{
 			if (str[i] == '\n')
-				line->index++;		
+				line->index++;
 			i++;
 		}
 	}
 	line->tabl = ft_memalloc(sizeof(int) * (line->index + 1));
-	ft_stock_totable(line,str);
+	ft_stock_totable(line, str);
 }
 
-void 		multilne(char *str,t_line *line)
+void multilne(char *str, t_line *line)
 {
 	// if (line->tabl)
 	// 	ft_memdel((void **)&line->tabl);

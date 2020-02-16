@@ -43,6 +43,9 @@
 #define page_up 2117425947
 #define ALT_D 4
 #define ALT_S 40899
+#define ALT_V 10127586
+#define TRUE 1
+#define ALT_C 42947
 
 
 int g_col;
@@ -124,3 +127,7 @@ void	print_line(char *str);
 void    ft_select(t_line *line, char *str);
 void    ft_unselect(t_line *line,char *str);
 void	ft_chack_selction(t_line *line, char *str);
+void	ft_print_print(char **str,t_line *line, char *buff,t_init *init);
+void    ft_unselect(t_line *line,char *str);
+void	ft_clear(t_line *line,char *str);
+void	ft_copie(t_line *line, char *str);
