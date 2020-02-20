@@ -54,6 +54,24 @@ void ft_put_multistring(char **strings)
 	while(*strings)
 		ft_putstr(*strings++);
 }
+void	handle_sigint(int sig)
+{
+	struct winsize w;
+	ioctl (0,TIOCGWINSZ,&w);
+	if (sig == SIGWINCH)
+    {
+		g_line->col = w.ws_col;
+		g_line->row = w.ws_row;
+		tputs(tgoto(tgetstr("cm", 0), 0, g_line->c_o.y), 0, ft_output);
+		tputs(tgetstr("cd", 0), 0, ft_output);
+		ft_porompte();
+        ft_clear(g_line,g_str);
+    }
+}
+void  ft_signale(void)
+{
+	signal(SIGWINCH,handle_sigint);
+}
 
 void ft_porompte(void)
 {
@@ -169,6 +187,9 @@ int main()
 	head = list;
 	while (TRUE)
 	{
+		ft_signale();
+		g_line = &line;
+		g_str = str;
 		if (init.k == 1)
 		{
 			ft_porompte();

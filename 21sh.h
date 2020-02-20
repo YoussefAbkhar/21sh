@@ -48,9 +48,6 @@
 #define ALT_C 42947
 
 
-int g_col;
-int g_row;
-
 typedef struct s_init
 {
 	int k;
@@ -78,6 +75,7 @@ typedef struct s_point
 	int y;
 }				t_point;
 
+
 typedef struct s_line
 {
 	t_point 	c_o;
@@ -96,7 +94,8 @@ typedef struct s_line
 	int			slctf;
 	char		*sltstr;
 }				t_line;
-
+t_line	*g_line;
+char	*g_str;
 void	ft_stock(char *str, t_node **list, t_line *line);
 int		ft_output(int str);
 void	cur_goto(t_line *line, int cursor);
@@ -131,3 +130,4 @@ void	ft_print_print(char **str,t_line *line, char *buff,t_init *init);
 void    ft_unselect(t_line *line,char *str);
 void	ft_clear(t_line *line,char *str);
 void	ft_copie(t_line *line, char *str);
+void	ft_porompte(void);
