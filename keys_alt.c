@@ -12,7 +12,7 @@
 
 #include "21sh.h"
 
-void	alt_cgoto(t_line *line)
+void alt_cgoto(t_line *line)
 {
 	int i;
 	int nb;
@@ -21,7 +21,7 @@ void	alt_cgoto(t_line *line)
 	i = 0;
 	while (i <= line->index)
 	{
-		nb +=line->tabl[i];
+		nb += line->tabl[i];
 		if (nb > line->c_len)
 			break;
 		i++;
@@ -49,14 +49,14 @@ int count_row(t_line *line)
 	return (y);
 }
 
-void	ft_update_cursor_o(t_line *line)
+void ft_update_cursor_o(t_line *line)
 {
 	if (line->tabl && (line->c_o.y + count_row(line) - line->row > 0))
 		line->c_o.y -= ((line->c_o.y + count_row(line) - line->row));
 	move_cursor_v(line);
 }
 
-void    ft_alt_rth(char *str,t_line *line)
+void ft_alt_rth(char *str, t_line *line)
 {
 	if (line->tabl && line->cursor < line->tabl[line->i])
 	{
@@ -76,11 +76,11 @@ void    ft_alt_rth(char *str,t_line *line)
 		}
 		alt_cgoto(line);
 		move_cursor_v(line);
-		cur_goto(line,line->cursor);
+		cur_goto(line, line->cursor);
 	}
 }
 
-void    ft_alt_lft(char *str,t_line *line)
+void ft_alt_lft(char *str, t_line *line)
 {
 	if (line->tabl)
 	{
@@ -103,11 +103,11 @@ void    ft_alt_lft(char *str,t_line *line)
 		}
 		alt_cgoto(line);
 		move_cursor_v(line);
-		cur_goto(line,line->cursor);
+		cur_goto(line, line->cursor);
 	}
 }
 
-void	ft_delet(char **str,t_line *line)
+void ft_delet(char **str, t_line *line)
 {
 	char *tmp;
 	char *tmp1;
@@ -119,10 +119,10 @@ void	ft_delet(char **str,t_line *line)
 			line->cursor = line->tabl[line->i];
 		}
 		line->cursor--;
-		tmp = ft_strsub(*str,0,line->c_len - 1);
+		tmp = ft_strsub(*str, 0, line->c_len - 1);
 		tmp1 = ft_strsub(*str, line->c_len, line->b_line - line->c_len + 1);
 		ft_strdel(str);
-		*str = ft_strjoin(tmp,tmp1);
+		*str = ft_strjoin(tmp, tmp1);
 		ft_strdel(&tmp);
 		ft_strdel(&tmp1);
 		tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
@@ -131,20 +131,20 @@ void	ft_delet(char **str,t_line *line)
 		line->b_line--;
 		line->len--;
 		line->c_len--;
-		multilne(*str,line);
+		multilne(*str, line);
 		move_cursor_v(line);
 		cur_goto(line, line->cursor);
 	}
 }
 
-void ft_print(char **str,char *c, int c_len,t_line *line)
+void ft_print(char **str, char *c, int c_len, t_line *line)
 {
 	char *tmp;
 	char *tmp1;
 	char *tmp2;
 
-	tmp = ft_strsub(*str,0,c_len);
-	tmp1 = ft_strsub(*str,c_len,line->b_line - c_len);
+	tmp = ft_strsub(*str, 0, c_len);
+	tmp1 = ft_strsub(*str, c_len, line->b_line - c_len);
 	ft_strdel(str);
 	tmp2 = ft_strjoin(tmp, c);
 	*str = ft_strjoin(tmp2, tmp1);
@@ -153,12 +153,12 @@ void ft_print(char **str,char *c, int c_len,t_line *line)
 	ft_strdel(&tmp);
 }
 
-void    ft_printnbl(char **str,t_line *line, t_init *init,char c)
+void ft_printnbl(char **str, t_line *line, t_init *init, char c)
 {
-	ft_strcpy(init->c,(char []){c, 0});
+	ft_strcpy(init->c, (char[]){c, 0});
 	if (!(*str))
 		(*str) = ft_strdup("");
-	ft_print(str,init->c, line->c_len,line);
+	ft_print(str, init->c, line->c_len, line);
 	line->len++;
 	if (c == '\n')
 	{
@@ -168,7 +168,6 @@ void    ft_printnbl(char **str,t_line *line, t_init *init,char c)
 	else
 		line->cursor++;
 	line->b_line++;
-	multilne(*str,line);
+	multilne(*str, line);
 	line->c_len++;
 }
-

@@ -15,29 +15,29 @@
 void ft_copie(t_line *line, char *str)
 {
     if (line->sltstr)
-            ft_strdel(&line->sltstr);
+        ft_strdel(&line->sltstr);
     if (line->c_len > line->slctd)
     {
         line->slctf = (line->c_len - line->slctd);
-        line->sltstr = ft_strsub(str,line->slctd,line->slctf + 1);
+        line->sltstr = ft_strsub(str, line->slctd, line->slctf + 1);
     }
     else
     {
         line->slctf = (line->c_len - line->slctd) * -1;
-        line->sltstr = ft_strsub(str,line->c_len + 1,line->slctf);
+        line->sltstr = ft_strsub(str, line->c_len + 1, line->slctf);
     }
     line->slct = 0;
     line->slctd = 0;
-    ft_clear(line,str);
+    ft_clear(line, str);
 }
 
-void    ft_chack_selction(t_line *line,char *str)
+void ft_chack_selction(t_line *line, char *str)
 {
     if (line->slct)
     {
         line->slct = 0;
         line->slctd = 0;
-        ft_clear(line,str);
+        ft_clear(line, str);
     }
     else if (!line->slct)
     {
@@ -47,7 +47,7 @@ void    ft_chack_selction(t_line *line,char *str)
     }
 }
 
-void    ft_select(t_line *line,char *str)
+void ft_select(t_line *line, char *str)
 {
     if (str)
     {
@@ -57,7 +57,7 @@ void    ft_select(t_line *line,char *str)
     }
 }
 
-void    ft_unselect(t_line *line,char *str)
+void ft_unselect(t_line *line, char *str)
 {
     if (str)
         ft_putchar(str[line->c_len]);

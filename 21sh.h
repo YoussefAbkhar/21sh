@@ -47,7 +47,6 @@
 #define TRUE 1
 #define ALT_C 42947
 
-
 typedef struct s_init
 {
 	int k;
@@ -62,9 +61,9 @@ typedef struct s_node
 	int len;
 	char *content;
 	int *tabl;
-	int	index;
+	int index;
 	int t_len;
-	int	b_line;
+	int b_line;
 	struct s_node *next;
 	struct s_node *prev;
 } t_node;
@@ -73,61 +72,60 @@ typedef struct s_point
 {
 	int x;
 	int y;
-}				t_point;
-
+} t_point;
 
 typedef struct s_line
 {
-	t_point 	c_o;
-	t_point 	c_v;
-	int 		col;
-	int 		row;
-	int 		len;
-	int 		index;
-	int 		i;
-	int			cursor;
-	int 		*tabl;
-	int 		c_len;
-	int			b_line;
-	int			slct;
-	int			slctd;
-	int			slctf;
-	char		*sltstr;
-}				t_line;
-t_line	*g_line;
-char	*g_str;
-void	ft_stock(char *str, t_node **list, t_line *line);
-int		ft_output(int str);
-void	cur_goto(t_line *line, int cursor);
-void	ft_alt_rth(char *str, t_line *line);
-void	ft_alt_lft(char *str, t_line *line);
-void	ft_printnbl(char **str, t_line *line, t_init *init,char c);
-void	ft_delet(char **str, t_line *line);
-void	ft_next(t_node **head, t_node **list, char **str, t_line *line);
-void	ft_prev(t_node **head, t_node **list, char **str, t_line *line);
-void	get_cursor_position(t_line *line);
-void	ft_end(t_node **list, t_node **head, t_line *line, char **str);
-void	print_porompte(t_line *line);
-void	move_left(t_line *line, char *str);
-void	move_right(t_line *line, char *str);
-void	home_deep(t_line *line,t_init *init, char *str);
-void	esc(void);
-void	esc1(void);
-void	ft_init(t_line *line);
-void	ft_multi(char **str,t_line *line,char **tmp);
-void	multilne(char *str,t_line *line);
-void	move_up(t_line *line);
-void	move_down(t_line *line);
-void	move_cursor_v(t_line *line);
-int		count_len(t_line *line);
-int		count_row(t_line *line);
-void	ft_update_cursor_o(t_line *line);
-void	print_line(char *str);
-void    ft_select(t_line *line, char *str);
-void    ft_unselect(t_line *line,char *str);
-void	ft_chack_selction(t_line *line, char *str);
-void	ft_print_print(char **str,t_line *line, char *buff,t_init *init);
-void    ft_unselect(t_line *line,char *str);
-void	ft_clear(t_line *line,char *str);
-void	ft_copie(t_line *line, char *str);
-void	ft_porompte(void);
+	t_point c_o;
+	t_point c_v;
+	int col;
+	int row;
+	int len;
+	int index;
+	int i;
+	int cursor;
+	int *tabl;
+	int c_len;
+	int b_line;
+	int slct;
+	int slctd;
+	int slctf;
+	char *sltstr;
+} t_line;
+t_line *g_line;
+char *g_str;
+void ft_stock(char *str, t_node **list, t_line *line);
+int ft_output(int str);
+void cur_goto(t_line *line, int cursor);
+void ft_alt_rth(char *str, t_line *line);
+void ft_alt_lft(char *str, t_line *line);
+void ft_printnbl(char **str, t_line *line, t_init *init, char c);
+void ft_delet(char **str, t_line *line);
+void ft_next(t_node **head, t_node **list, char **str, t_line *line);
+void ft_prev(t_node **head, t_node **list, char **str, t_line *line);
+void get_cursor_position(t_line *line);
+void ft_end(t_node **list, t_node **head, t_line *line, char **str);
+void print_porompte(t_line *line);
+void move_left(t_line *line, char *str);
+void move_right(t_line *line, char *str);
+void home_deep(t_line *line, t_init *init, char *str);
+void esc(void);
+void esc1(void);
+void ft_init(t_line *line);
+void ft_multi(char **str, t_line *line, char **tmp);
+void multilne(char *str, t_line *line);
+void move_up(t_line *line);
+void move_down(t_line *line);
+void move_cursor_v(t_line *line);
+int count_len(t_line *line);
+int count_row(t_line *line);
+void ft_update_cursor_o(t_line *line);
+void print_line(char *str);
+void ft_select(t_line *line, char *str);
+void ft_unselect(t_line *line, char *str);
+void ft_chack_selction(t_line *line, char *str);
+void ft_print_print(char **str, t_line *line, char *buff, t_init *init);
+void ft_unselect(t_line *line, char *str);
+void ft_clear(t_line *line, char *str);
+void ft_copie(t_line *line, char *str);
+void ft_porompte(void);
