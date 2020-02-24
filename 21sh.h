@@ -51,9 +51,7 @@ typedef struct s_init
 {
 	int k;
 	int r;
-	char *str;
 	char c[2];
-	char *tmp;
 } t_init;
 
 typedef struct s_node
@@ -91,7 +89,11 @@ typedef struct s_line
 	int slctd;
 	int slctf;
 	char *sltstr;
+	int k;
+	int r;
+	char c[2];
 } t_line;
+
 t_line *g_line;
 char *g_str;
 void ft_stock(char *str, t_node **list, t_line *line);
@@ -99,7 +101,7 @@ int ft_output(int str);
 void cur_goto(t_line *line, int cursor);
 void ft_alt_rth(char *str, t_line *line);
 void ft_alt_lft(char *str, t_line *line);
-void ft_printnbl(char **str, t_line *line, t_init *init, char c);
+void ft_printnbl(char **str, t_line *line, char c);
 void ft_delet(char **str, t_line *line);
 void ft_next(t_node **head, t_node **list, char **str, t_line *line);
 void ft_prev(t_node **head, t_node **list, char **str, t_line *line);
@@ -108,7 +110,7 @@ void ft_end(t_node **list, t_node **head, t_line *line, char **str);
 void print_porompte(t_line *line);
 void move_left(t_line *line, char *str);
 void move_right(t_line *line, char *str);
-void home_deep(t_line *line, t_init *init, char *str);
+void home_deep(t_line *line, char *str);
 void esc(void);
 void esc1(void);
 void ft_init(t_line *line);
@@ -124,7 +126,7 @@ void print_line(char *str);
 void ft_select(t_line *line, char *str);
 void ft_unselect(t_line *line, char *str);
 void ft_chack_selction(t_line *line, char *str);
-void ft_print_print(char **str, t_line *line, char *buff, t_init *init);
+void ft_print_print(char **str, t_line *line, char *buff);
 void ft_unselect(t_line *line, char *str);
 void ft_clear(t_line *line, char *str);
 void ft_copie(t_line *line, char *str);

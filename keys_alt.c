@@ -153,12 +153,12 @@ void ft_print(char **str, char *c, int c_len, t_line *line)
 	ft_strdel(&tmp);
 }
 
-void ft_printnbl(char **str, t_line *line, t_init *init, char c)
+void ft_printnbl(char **str, t_line *line, char c)
 {
-	ft_strcpy(init->c, (char[]){c, 0});
+	ft_strcpy(line->c, (char[]){c, 0});
 	if (!(*str))
 		(*str) = ft_strdup("");
-	ft_print(str, init->c, line->c_len, line);
+	ft_print(str, line->c, line->c_len, line);
 	line->len++;
 	if (c == '\n')
 	{
@@ -171,3 +171,10 @@ void ft_printnbl(char **str, t_line *line, t_init *init, char c)
 	multilne(*str, line);
 	line->c_len++;
 }
+
+
+
+
+
+
+

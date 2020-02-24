@@ -136,9 +136,9 @@ void move_down(t_line *line)
 	}
 }
 
-void home_deep(t_line *line, t_init *init, char *str)
+void home_deep(t_line *line, char *str)
 {
-	if (str && init->r == HOME)
+	if (str && line->r == HOME)
 	{
 		line->c_v = line->c_o;
 		line->i = 0;
@@ -147,7 +147,7 @@ void home_deep(t_line *line, t_init *init, char *str)
 		line->len = line->tabl[line->i];
 		tputs(tgoto(tgetstr("cm", 0), line->c_v.x, line->c_v.y), 0, ft_output);
 	}
-	else if (str && init->r == DEEP)
+	else if (str && line->r == DEEP)
 	{
 		line->b_line = ft_strlen(str);
 		line->i = line->index;
