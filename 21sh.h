@@ -31,16 +31,16 @@
 #define DEL 127
 #define END 10
 #define ESC 27
-#define alt_rth 26139
-#define alt_lft 25115
+#define alt_rth 1130044187
+#define alt_lft 1146821403
 #define HOME 4741915
 #define DEEP 4610843
 #define alt_C 42947
 #define alt_V 10127586
 #define alt_S 40899
-#define alt_up 1096489755
-#define page_down 2117491483
-#define page_up 2117425947
+// #define alt_up 1096489755
+#define page_down 1113266971
+#define page_up 1096489755
 #define ALT_D 4
 #define ALT_S 40899
 #define ALT_V 10127586

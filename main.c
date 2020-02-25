@@ -54,7 +54,7 @@ void ft_put_multistring(char **strings)
 	while (*strings)
 		ft_putstr(*strings++);
 }
-void handle_sigint(int sig)
+void handle_sigwindch(int sig)
 {
 	struct winsize w;
 	ioctl(0, TIOCGWINSZ, &w);
@@ -70,7 +70,7 @@ void handle_sigint(int sig)
 }
 void ft_signale(void)
 {
-	signal(SIGWINCH, handle_sigint);
+	signal(SIGWINCH, handle_sigwindch);
 }
 
 void ft_porompte(void)
@@ -128,9 +128,7 @@ void ft_init(t_line *line)
 
 void print_porompte(t_line *line)
 {
-	int i = line->index - line->i;
-	while (--i > 0)
-		write(1, "\n", 1);
+	cur_goto(line, line->b_line);
 	write(1, "\n", 1);
 	line->index = 0;
 	line->i = 0;
@@ -216,7 +214,7 @@ int keyshendle2(t_line *line, char **str)
 	else if (line->r == ALT_D && line->slct == 0 && (r = 1))
 	{
 		if (!line->b_line)
-			return (2);
+			exit(0);
 	}
 	return (r);
 }
@@ -242,12 +240,12 @@ int main()
 	t_line line;
 	t_node *list;
 	t_node *head;
-	char buff[1024];
 	list = NULL;
+	head = list;
 	char *str;
 	str = NULL;
+	char buff[1024];
 	ft_init(&line);
-	head = list;
 	while (TRUE)
 	{
 		ft_signale();
@@ -269,10 +267,8 @@ int main()
 				continue ;
 			else if (keyshendle1(&line, &str, &list,&head))
 				continue ;
-			else if (keyshendle2(&line, &str) == 1)
+			else if (keyshendle2(&line, &str))
 				continue ;
-			else if (keyshendle2(&line, &str) == 2)
-				return (0);
 			else if (line.slct == 0)
 				ft_print_print(&str, &line, buff);
 		}
