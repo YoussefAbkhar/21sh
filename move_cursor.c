@@ -191,8 +191,6 @@ void ft_allocate_table(t_line *line, char *str)
 
 void multilne(char *str, t_line *line)
 {
-	// if (line->tabl)
-	// 	ft_memdel((void **)&line->tabl);
 	line->len = 0;
 	line->index = 0;
 	ft_allocate_table(line, str);
