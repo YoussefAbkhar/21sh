@@ -169,8 +169,6 @@ void ft_printnbl(char **str, t_line *line, char c)
 		line->cursor++;
 	line->b_line++;
 	multilne(*str, line);
-	if (*line->tabl)
-		ft_memdel((void **)&line->tabl);
 	line->c_len++;
 }
 

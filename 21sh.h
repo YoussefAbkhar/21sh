@@ -30,6 +30,7 @@
 #define SPACE 32
 #define DEL 127
 #define END 10
+#define ESC 27
 #define alt_rth 1130044187
 #define alt_lft 1146821403
 #define HOME 4741915
@@ -37,6 +38,7 @@
 #define alt_C 42947
 #define alt_V 10127586
 #define alt_S 40899
+// #define alt_up 1096489755
 #define page_down 1113266971
 #define page_up 1096489755
 #define ALT_D 4
@@ -109,6 +111,8 @@ void print_porompte(t_line *line);
 void move_left(t_line *line, char *str);
 void move_right(t_line *line, char *str);
 void home_deep(t_line *line, char *str);
+void esc(void);
+void esc1(void);
 void ft_init(t_line *line);
 void ft_multi(char **str, t_line *line, char **tmp);
 void multilne(char *str, t_line *line);
