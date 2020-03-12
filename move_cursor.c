@@ -155,7 +155,8 @@ void home_deep(t_line *line, char *str)
 		line->len = line->tabl[line->i];
 		line->cursor = line->len;
 		move_cursor_v(line);
-		tputs(tgoto(tgetstr("cm", 0), (line->c_v.x + line->cursor) % line->col, (line->c_v.y + (line->c_v.x + line->cursor) / line->col)), 0, ft_output);
+		tputs(tgoto(tgetstr("cm", 0), (line->c_v.x + line->cursor) % line->col,
+			(line->c_v.y + (line->c_v.x + line->cursor) / line->col)), 0, ft_output);
 	}
 }
 
@@ -185,14 +186,14 @@ void ft_allocate_table(t_line *line, char *str)
 			i++;
 		}
 	}
+	if (line->tabl)
+		ft_memdel((void **)&line->tabl);
 	line->tabl = ft_memalloc(sizeof(int) * (line->index + 1));
 	ft_stock_totable(line, str);
 }
 
 void multilne(char *str, t_line *line)
 {
-	// if (line->tabl)
-	// 	ft_memdel((void **)&line->tabl);
 	line->len = 0;
 	line->index = 0;
 	ft_allocate_table(line, str);

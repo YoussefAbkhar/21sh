@@ -38,7 +38,6 @@
 #define alt_C 42947
 #define alt_V 10127586
 #define alt_S 40899
-// #define alt_up 1096489755
 #define page_down 1113266971
 #define page_up 1096489755
 #define ALT_D 4
@@ -46,6 +45,8 @@
 #define ALT_V 10127586
 #define TRUE 1
 #define ALT_C 42947
+#define CTRL_L 12
+#define DELETE 2117294875
 
 typedef struct s_init
 {
@@ -131,3 +132,4 @@ void ft_unselect(t_line *line, char *str);
 void ft_clear(t_line *line, char *str);
 void ft_copie(t_line *line, char *str);
 void ft_porompte(void);
+void koko(char **str, t_line *line);

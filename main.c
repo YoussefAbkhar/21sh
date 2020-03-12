@@ -54,6 +54,7 @@ void ft_put_multistring(char **strings)
 	while (*strings)
 		ft_putstr(*strings++);
 }
+
 void handle_sigwindch(int sig)
 {
 	struct winsize w;
@@ -68,6 +69,19 @@ void handle_sigwindch(int sig)
 		ft_clear(g_line, g_str);
 	}
 }
+
+void ft_ctl_l(t_line *line,char *str)
+{
+	tputs(tgoto(tgetstr("cm", 0), 0, 0), 0, ft_output);
+	tputs(tgetstr("cd", 0), 0, ft_output);
+	ft_porompte();
+	line->c_o.y = 0;
+	tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
+	print_line(str);
+	move_cursor_v(line);
+	cur_goto(line, line->cursor);
+}
+
 void ft_signale(void)
 {
 	signal(SIGWINCH, handle_sigwindch);
@@ -211,10 +225,14 @@ int keyshendle2(t_line *line, char **str)
 		ft_alt_lft(*str, line);
 	else if (line->r == DEL && line->slct == 0 && (r = 1))
 		ft_delet(str, line);
-	else if (line->r == ALT_D && line->slct == 0 && (r = 1))
+	else if (line->r == DELETE && line->slct == 0 && (r = 1))
+		ft_delet(str, line);
+	else if (line->r == CTRL_L && line->slct == 0 && (r = 1))
+		ft_ctl_l(line, *str);
+	else if (line->r == ALT_D && (!line->b_line) && line->slct == 0)
 	{
-		if (!line->b_line)
-			exit(0);
+		ft_putendl("exit");
+		exit(0);
 	}
 	return (r);
 }
