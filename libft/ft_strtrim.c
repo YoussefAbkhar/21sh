@@ -3,27 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strtrim.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yabakhar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: oelazzou <oelazzou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/04/09 19:32:01 by yabakhar          #+#    #+#             */
-/*   Updated: 2019/04/19 02:27:20 by yabakhar         ###   ########.fr       */
+/*   Created: 2019/03/31 01:18:12 by oelazzou          #+#    #+#             */
+/*   Updated: 2019/05/20 04:55:11 by oelazzou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strtrim(char const *s)
+static int	is_white(char c)
 {
-	int		i;
-	int		j;
+	if (c == ' ' || c == '\n' || c == '\t')
+		return (1);
+	return (0);
+}
 
-	i = 0;
-	if (!s)
+char		*ft_strtrim(char const *s)
+{
+	int				end;
+	unsigned int	start;
+	char			*str;
+
+	if (s == NULL)
 		return (NULL);
-	j = ft_strlen(s) - 1;
-	while (s[i] == '\n' || s[i] == ' ' || s[i] == '\t')
-		i++;
-	while ((s[j] == '\n' || s[j] == ' ' || s[j] == '\t') && j > 0)
-		j--;
-	return (ft_strsub(s, i, (size_t)((j - i + 1) >= 0 ? (j - i + 1) : 0)));
+	start = 0;
+	while (s[start] && is_white(s[start]))
+		start++;
+	end = (int)ft_strlen(s) - 1;
+	while (s[end] && is_white(s[end]) && end > (int)start)
+		end--;
+	str = ft_strsub(s, start, (end - start + 1));
+	if (str == NULL)
+		return (NULL);
+	return (str);
 }

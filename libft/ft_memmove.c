@@ -3,38 +3,36 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memmove.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yabakhar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: oelazzou <oelazzou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/04/03 16:57:09 by yabakhar          #+#    #+#             */
-/*   Updated: 2019/04/09 21:59:42 by yabakhar         ###   ########.fr       */
+/*   Created: 2019/03/26 16:36:47 by oelazzou          #+#    #+#             */
+/*   Updated: 2019/05/19 17:35:57 by oelazzou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	*ft_memmove(void *dst, const void *src, size_t len)
+void			*ft_memmove(void *dest, const void *src, size_t n)
 {
 	const char	*psrc;
-	char		*pdst;
+	char		*pdest;
 
-	psrc = (const char*)src;
-	pdst = (char *)dst;
-	if (dst <= src)
+	psrc = src;
+	pdest = dest;
+	if (pdest < psrc)
 	{
-		dst = ft_memcpy(dst, src, len);
-		return (dst);
+		dest = ft_memcpy(dest, src, n);
+		return (dest);
 	}
-	else if (dst > src)
+	else
 	{
-		pdst = dst + len - 1;
-		psrc = src + len - 1;
-		while (len--)
+		pdest = dest + n - 1;
+		psrc = src + n - 1;
+		while (n--)
 		{
-			*pdst = *psrc;
-			pdst--;
-			psrc--;
+			*pdest-- = *psrc--;
 		}
-		return (dst);
+		return (dest);
 	}
-	return (dst);
+	return (dest);
 }

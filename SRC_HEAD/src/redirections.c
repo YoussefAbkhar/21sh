@@ -1,0 +1,225 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirections.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: macos <macos@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/23 17:41:00 by macos             #+#    #+#             */
+/*   Updated: 2020/11/14 01:16:23 by macos            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../includes/21sh.h"
+
+
+char    *redirection_varname(char ***arr, char *str, int *i)
+{
+    size_t c_len;
+    char **agg;
+    char *tmp = NULL;
+
+    c_len = 0;
+    agg = *arr;
+    while(!is_blank(str[*i + c_len]) && str[*i + c_len]) // word expansions needed!!
+        c_len++;
+    tmp = ft_strsub(str, *i, c_len);
+    *i = *i + c_len;
+    return (tmp);
+}
+
+static void redirection_varname_2(char ***arr, char *str, int *j, int *i, size_t len)
+{
+    char **agg;
+    char *tmp = NULL;
+
+    *j = *j + 1;
+    *i = *i + 1;
+    while(is_blank(str[*i]) && str[*i])
+        *i = *i + 1;
+    agg = *arr;
+    tmp = ft_strsub(str, *i, len - *i + 1);
+    agg[*j] = ft_strdup(tmp);
+    ft_strdel(&tmp);
+    *i = *i + len - (*i) - 1;
+}
+
+static char *get_digits(char *str, int i)
+{
+    int j;
+    int k;
+    char *s;
+
+    s = ft_strnew(5);
+    if (!s)
+    {
+        j = i;
+        k = 0;
+        while (str[j] && j >= 0 && k <= 4)
+        {
+            if (ft_isdigit(str[j]))
+            {
+                s[k] = str[j];
+                k++;
+            }
+            else if (j >= 0 && k <= 0 && is_blank(str[j]))
+            {
+                ft_strdel(&s);
+                return (error_ret(NULL, ERR_BAD_FD));
+            }
+            j--;
+        }
+        return (s);
+    }
+    return (NULL);
+}
+
+//  *str must be  at aggr_symbol {><&}
+static char *get_left_fd(char *str, int pos)
+{
+    int i;
+    int j;
+    char *tmp;
+
+    tmp = ft_strnew(ft_strlen(str));
+    if (!tmp)
+    {
+        i = pos;
+        j = 0;
+        while (i >= 0 && str[i] && !is_blank(str[i]))
+        {
+            tmp[j] = str[i];
+            i--;
+            j++;
+        }
+        return (tmp);
+    }
+    return (NULL);
+}
+
+static int  calc_symbol(char *str)
+{
+    int count;
+
+    count = 0;
+    while (str[count] && ft_is_there(AGG_REDI, str[count]))
+        count++;
+    return (count);
+}
+
+char **split_redir(char *str, int pos)
+{
+    int symbol;
+    int i;
+    int j;
+    char **agg;
+    char *tmp;
+    int active_word = 0;
+
+    agg = NULL;
+    size_t agg_len = wordinbuff_size(str) + 1;
+    size_t agg_len_str = 0;
+    
+    if (str && (agg = (char**)ft_memalloc(sizeof(char*) * agg_len)) != NULL) // word size must be calculated!! (agg_len?)
+    {
+        size_t len = ft_strlen(str);
+        i = 0; // pos
+        j = 0;
+        agg_len_str = wordinstr_size(str + i, agg_len - 1);
+        while (i < len && str[i] != '\0' && j < agg_len - 1)
+        {
+            while (str[i] && is_blank(str[i]) && i < len)
+                    i++;
+            if (ft_is_there(";", str[i]))
+                return (agg);
+            if (i >= len || !(agg[j] = ft_strnew(agg_len_str)))
+                return (NULL);
+            if ((str[i] == '>' || str[i] == '<') && (str[i + 1] == '>' || str[i + 1] == '<') && str[i] == str[i + 1])
+            {
+                agg[j][0] = str[i];
+                agg[j][1] = str[i];
+                j++;
+                i = i + 2;
+            }
+            else if (str[i] == '>' || str[i] == '<')
+            {
+                agg[j][0] = str[i];
+                if (i + 1 < len && str[i + 1] == '&') // for &
+                {
+                    agg[j][1] = '&';
+                    if (i + 2 < len && str[i + 2] && str[i + 2] == '-')
+                    {
+                        agg[j][2] = '-';
+                        i++;
+                    }
+                    i++;
+                }
+                // else if (str[i] == '>' || str[i] == '<' && str[i + 1])
+            //         //printf("i = %d || str[%d] == %c\n ", i, i, str[i]);
+            //         redirection_varname_2(&agg, str, &j, &i, len);
+                j++;
+            }
+            else if (is_quote(str[i]) && str[i - 1] != '\\')
+            {
+                ft_strdel(&agg[j]);
+                return (agg);
+            }
+            else if ((ft_isalnum(str[i]) || str[i] == '$') && i < len && str[i - 1] != '&' && !ft_isdigit(str[i - 1]) && !active_word)
+            { // {varname}
+                ft_strdel(&agg[j]);
+                agg[j] = redirection_varname(&agg, str, &i);
+                j++;
+                active_word = !active_word;
+                break ;
+            }
+            else if (ft_isdigit(str[i])) //Right Redirection!
+            {
+                agg[j++] = get_right_redir(str + i);
+                break ; 
+            }
+            else // error handling!
+            {
+                ft_putstr_fd("Error bad file descriptor\n", 2);
+                exit(1);
+            }
+            i++;
+        }
+    }
+    agg[j] = NULL;
+    return (agg);
+}
+
+size_t     redirerction_parse(t_lexer **token_node, char **agg, t_pointt *cor, int *i_p)
+{
+    int i;
+    int j;
+    size_t biglen;
+
+    j = 0;
+    i = *i_p;
+    while (agg[j] != NULL && agg[j][0] != '\0')
+    {
+        if (ft_isdigit(agg[j][0]) && j == 0 && i >= 2)
+            append_list_redi(token_node, agg[j], L_REDIR, cor);
+        else if (ft_is_there(AGG_REDI, agg[j][0]))
+        {
+            if (!j && agg[j][0] == '>')
+                append_list_redi(token_node, agg[j], AGGR_SYM, cor);
+            else if (!j && agg[j][0] == '<')
+                append_list_redi(token_node, agg[j], AGGR_SYM, cor);
+            else
+                append_list_redi(token_node, agg[j], AGGR_SYM, cor);
+        }
+        else if (ft_isalnum(agg[j][0]))//expansion
+            append_list_redi(token_node, agg[j], R_REDIR, cor);
+        j++;
+    }
+    j = 0;
+    biglen = 0;
+    while (agg[j] != NULL)
+    {
+        biglen += ft_strlen(agg[j]);
+        j++;
+    }
+    return (biglen);
+}

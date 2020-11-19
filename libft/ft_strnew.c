@@ -3,19 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strnew.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yabakhar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: oelazzou <oelazzou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/04/05 19:24:07 by yabakhar          #+#    #+#             */
-/*   Updated: 2019/04/05 20:43:31 by yabakhar         ###   ########.fr       */
+/*   Created: 2019/03/28 16:15:55 by oelazzou          #+#    #+#             */
+/*   Updated: 2019/04/13 22:03:41 by oelazzou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strnew(size_t size)
+char		*ft_strnew(size_t size)
 {
 	char	*str;
 
-	str = ft_memalloc(size + 1);
+	str = (char *)ft_memalloc(size + 1);
 	return (str);
 }

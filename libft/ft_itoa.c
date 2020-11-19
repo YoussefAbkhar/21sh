@@ -3,40 +3,67 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yabakhar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: oelazzou <oelazzou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/04/10 22:35:51 by yabakhar          #+#    #+#             */
-/*   Updated: 2019/04/18 17:32:55 by yabakhar         ###   ########.fr       */
+/*   Created: 2019/03/31 20:35:41 by oelazzou          #+#    #+#             */
+/*   Updated: 2019/04/04 19:55:27 by oelazzou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_itoa(int n)
+static int	is_neg(int n)
 {
-	char			*tab;
-	int				len;
-	unsigned int	nb;
-	int				i;
+	if (n < 0)
+		return (1);
+	return (0);
+}
+
+static int	number_len(int nb)
+{
+	int		res;
+	long	n;
+
+	res = 0;
+	if (nb == 0)
+		return (1);
+	if (nb < 0)
+	{
+		res++;
+		n = -nb;
+	}
+	else
+		n = nb;
+	while (n > 0)
+	{
+		res++;
+		n = n / 10;
+	}
+	return (res);
+}
+
+char		*ft_itoa(int n)
+{
+	int		num;
+	int		len;
+	char	*str;
 
 	if (n == -2147483648)
 		return (ft_strdup("-2147483648"));
-	i = 0;
-	len = ft_get_len_int(n);
-	if (!(tab = (char*)malloc(sizeof(char) * len + 1)))
+	num = n;
+	len = number_len(n);
+	if (!(str = (char*)malloc(sizeof(*str) * (len + 1))))
 		return (NULL);
-	tab[len--] = '\0';
-	if (n < 0)
+	str[len] = '\0';
+	if (is_neg(n))
+		num = -n;
+	while (len >= 0)
 	{
-		tab[i++] = '-';
-		n *= -1;
+		str[len - 1] = (num % 10 + 48);
+		num /= 10;
+		len--;
 	}
-	nb = n;
-	while (nb / 10 > 0)
-	{
-		tab[len--] = nb % 10 + '0';
-		nb /= 10;
-	}
-	tab[len] = nb % 10 + 48;
-	return (tab);
+	if (is_neg(n))
+		str[0] = '-';
+	return (str);
 }
