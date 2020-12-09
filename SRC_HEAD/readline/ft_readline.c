@@ -49,16 +49,65 @@ void handle_sigwindch(int sig)
 	}
 }
 
+char		*ft_freejoin(char *s1, char *s2, int num)
+{
+	char	*str;
+
+	str = ft_strjoin(s1, s2);
+	if (num == 0)
+        free(s1);
+    else if (num == 1)
+        free(s2);
+    else if (num == 2)
+    {
+        free(s1);
+        free(s2);
+    }
+	return (str);
+}
+
+char  *ft_make_prompte_ctlr(char **prompte,char *c,int check)
+{
+	char *first_prompte;
+	first_prompte = ft_strdup("history sherch ( ");
+	if (check == 0)
+		*prompte = ft_strdup(c);
+	else
+		*prompte = ft_freejoin(*prompte, c, 0);
+	char *tmp = ft_freejoin(first_prompte, *prompte, 0);
+	char *third_prompte = ft_strdup(" ) : ");
+	tmp = ft_freejoin(tmp,third_prompte, 2);
+	return(tmp);
+}
+
+void ft_ctl_r(t_line *line,char *c,int ctl_r,char **prompte,char *str)
+{
+	char *oo;
+	tputs(tgoto(tgetstr("cm", 0), 0, line->c_o.y), 0, ft_output);
+	tputs(tgetstr("cd", 0), 0, ft_output);
+	oo = ft_make_prompte_ctlr(prompte,c,ctl_r);
+	ft_putstr(oo);
+	line->c_o.x = (int)ft_strlen(oo);
+	ft_strdel(&oo);
+	ft_clear(line, str);
+}
+
+void ft_clear(t_line *line, char *str)
+{
+	tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
+	tputs(tgetstr("cd", 0), 0, ft_output);
+	print_line(str);
+	ft_update_cursor_o(line);
+	cur_goto(line, line->cursor);
+}
+
 void ft_ctl_l(t_line *line, char *str)
 {
 	tputs(tgoto(tgetstr("cm", 0), 0, 0), 0, ft_output);
 	tputs(tgetstr("cd", 0), 0, ft_output);
 	ft_prompte();
 	line->c_o.y = 0;
-	tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
-	print_line(str);
-	move_cursor_v(line);
-	cur_goto(line, line->cursor);
+	ft_clear(line, str);
 }
 
 void ft_signale(void)
@@ -146,14 +195,6 @@ void print_line(char *str)
 	ft_putchar(' ');
 }
 
-void ft_clear(t_line *line, char *str)
-{
-	tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
-	tputs(tgetstr("cd", 0), 0, ft_output);
-	print_line(str);
-	ft_update_cursor_o(line);
-	cur_goto(line, line->cursor);
-}
 
 void ft_print_print(char **str, t_line *line, char *buff)
 {
@@ -191,6 +232,34 @@ int  keyshendle(t_line *line, char **str)
 	return (r);
 }
 
+int ctl_d(t_line *line, char **str)
+{
+	int r;
+	
+	r = 0;
+	if (line->r == CTL_D && line->slct == 0)
+	{
+		// if ((!line->b_line)/* && flag dyal quote wach kayn 1*/)
+		// {
+		// 	//khasso ikhraj men heredoc
+		// }
+		// else if ((line->b_line /*&& flag dyal quote wach kayn 1*/))
+		// {
+		// 	//khasso imsa7 3adi men lina ft_del(str, line);
+		// }
+		/*else*/ if (line->b_line && (r = 1))
+		{
+			ft_del(str, line);
+		}
+		else if (!line->b_line)
+		{
+			ft_putendl("exit");
+			exit(1);
+		}
+	}
+	return (r);
+}
+
 int keyshendle2(t_line *line, char **str)
 {
 	int r = 0;
@@ -201,14 +270,16 @@ int keyshendle2(t_line *line, char **str)
 	else if (line->r == DEL && line->slct == 0 && (r = 1))
 		ft_delet(str, line);
 	else if (line->r == DELETE && line->slct == 0 && (r = 1))
-		ft_delet(str, line);
+		ft_del(str, line);
 	else if (line->r == CTRL_L && line->slct == 0 && (r = 1))
 		ft_ctl_l(line, *str);
-	else if (line->r == ALT_D && (!line->b_line) && line->slct == 0)
-	{
-		ft_putendl("exit");
-		exit(0);
-	}
+	else if (ctl_d(line,str) && (r = 1))
+		return (r);
+	// else if (line->r == CTL_D && (!line->b_line) && line->slct == 0)
+	// {
+	// 	ft_putendl("exit");
+	// 	exit(0);
+	// }
 	return (r);
 }
 
@@ -234,8 +305,11 @@ char *ft_readline(void)
 {
 	t_node *current;
 	char buff[1024];
-	t_line  line;
+	t_line line;
 	ft_init(&(line), &current);
+	int ctl_r = 0;
+	char *prompte = NULL ;
+	int fd = open("/dev/ttys004",O_RDWR);
 	while (TRUE)
 	{
 		g_line = &line;
@@ -254,7 +328,20 @@ char *ft_readline(void)
 				continue ;
 			else if (line.r == END && line.slct == 0)
 				break ;
-			else if (line.slct == 0)
+			if (ctl_r == 1 || (line.r == 18 && line.slct == 0))
+			{
+				ft_putnbr_fd(line.r,fd);
+				if (line.r == LEFT)
+				{
+					break;
+				}
+				else
+				{
+					// ft_ctl_r(&(line), buff, ctl_r, &prompte, current->content);
+					ctl_r = 1;
+				}
+			}
+			if (line.slct == 0)
 				ft_print_print(&current->tmp, &(line), buff);
 		}
 	}

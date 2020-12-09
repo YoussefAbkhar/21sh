@@ -40,7 +40,7 @@
 #define alt_S 40899
 #define PAGE_DOWN 1113266971
 #define PAGE_UP 1096489755
-#define ALT_D 4
+#define CTL_D 4
 #define ALT_S 40899
 #define ALT_V 10127586
 #define TRUE 1
@@ -138,3 +138,5 @@ t_node *add_to_history(const char *str);
 void ft_history_goto(t_node **current, t_node *neww, t_line *line);
 char *ft_end(t_node **current, t_line *line);
 void free_history_node(t_node *node);
+void ft_del(char **str, t_line *line);
+char *ft_freejoin(char *s1, char *s2, int num);
