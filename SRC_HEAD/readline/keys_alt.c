@@ -6,7 +6,7 @@
 /*   By: macos <macos@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/18 23:33:30 by yabakhar          #+#    #+#             */
-/*   Updated: 2020/11/08 00:32:03 by macos            ###   ########.fr       */
+/*   Updated: 2020/11/21 19:43:25 by macos            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,30 +107,6 @@ void ft_alt_lft(char *str, t_line *line)
 	}
 }
 
-
-void ft_del(char **str, t_line *line)
-{
-	char *tmp;
-	char *tmp1;
-
-	if (line->c_len >= 0 && line->c_len < line->b_line)
-	{
-		tmp = ft_strsub(*str, 0, line->c_len);
-		tmp1 = ft_strsub(*str, line->c_len + 1, line->b_line - line->c_len);
-		ft_strdel(str);
-		*str = ft_freejoin(tmp, tmp1, 2);
-		tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
-		tputs(tgetstr("cd", 0), 0, ft_output);
-		print_line(*str);
-		line->b_line--;
-		line->len--;
-		ft_multilne(*str, line);
-		move_cursor_v(line);
-		cur_goto(line, line->cursor);
-	}
-}
-
-
 void ft_delet(char **str, t_line *line)
 {
 	char *tmp;
@@ -146,7 +122,9 @@ void ft_delet(char **str, t_line *line)
 		tmp = ft_strsub(*str, 0, line->c_len - 1);
 		tmp1 = ft_strsub(*str, line->c_len, line->b_line - line->c_len);
 		ft_strdel(str);
-		*str = ft_freejoin(tmp, tmp1, 2);
+		*str = ft_strjoin(tmp, tmp1);
+		ft_strdel(&tmp);
+		ft_strdel(&tmp1);
 		tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
 		tputs(tgetstr("cd", 0), 0, ft_output);
 		print_line(*str);

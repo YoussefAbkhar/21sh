@@ -6,9 +6,13 @@
 /*   By: macos <macos@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/02 12:55:33 by yabakhar          #+#    #+#             */
-/*   Updated: 2020/11/13 21:21:16 by macos            ###   ########.fr       */
+/*   Updated: 2020/11/21 19:37:02 by macos            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+
+#ifndef SH_R_H
+#define SH_R_H
 
 #include <stdio.h>
 #include <curses.h>
@@ -21,7 +25,7 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <sys/ioctl.h>
-#include "../libft/libft.h"
+
 
 #define UP 4283163
 #define DOWN 4348699
@@ -40,7 +44,7 @@
 #define alt_S 40899
 #define PAGE_DOWN 1113266971
 #define PAGE_UP 1096489755
-#define CTL_D 4
+#define ALT_D 4
 #define ALT_S 40899
 #define ALT_V 10127586
 #define TRUE 1
@@ -138,5 +142,5 @@ t_node *add_to_history(const char *str);
 void ft_history_goto(t_node **current, t_node *neww, t_line *line);
 char *ft_end(t_node **current, t_line *line);
 void free_history_node(t_node *node);
-void ft_del(char **str, t_line *line);
-char *ft_freejoin(char *s1, char *s2, int num);
+void ft_unset_terminal(void);
+# endif

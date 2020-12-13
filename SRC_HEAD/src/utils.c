@@ -1,27 +1,43 @@
 
-#include "../includes/21sh.h"
+#include "21sh.h"
+
+int is_there_in_env(char *str, t_env **env_list)
+{
+    t_env *cur;
+
+    cur = NULL;
+    if (env_list)
+    {
+        cur = *env_list;
+        while (cur)
+        {
+            if (ft_strequ(cur->env_var_name, str))
+                return (1);
+            cur = cur->next;
+        }
+    }
+    return (0);
+}
 
 size_t wordinbuff_size(char *str)
 {
     int i;
     size_t count;
-    //size_t count_char;
 
     count = 0;
     i = 0;
-    //count_char = 0;
-    while(str[i] && (str[i] == '>' || str[i] == '<'))
+    while(str[i] && (str[i] == '>' || str[i] == '<' || str[i] == '&')) // | &>- | &<- | > |  >>  | < | << | 2>&1 | >& | <& 
     {
-        if (str[i + 1] == '&')
-            i++;
+        count++;
         i++;
     }
-    count++;
     while (str[i] && is_blank(str[i]))
         i++;
     while (str[i] && !is_blank(str[i]))
+    {
         i++;
-    count++;
+        count++;
+    }
     return (count);
 }
 
@@ -110,6 +126,34 @@ size_t ft_strlen_char(char *s, char c)
     return (len);
 }
 
+size_t ft_strlen_blank(char *s)
+{
+    size_t len;
+
+    len = 0;
+    while (s[len] != '\0' && s[len] != ' ' && s[len] != '\t')
+        len++;
+    return (len);
+}
+
+size_t ft_strlen_exp(char *s)
+{
+    size_t len;
+
+    len = 0;
+    while (s[len] != '\0' && !is_blank(s[len]))
+    {
+        if (len > 1 && is_quote(s[len]) && s[len - 1] != '\\')
+            break ;
+        else if (!len && is_quote(s[len]))
+            break ;
+        len++;
+    }
+    if (!len)
+        len = 1;
+    return (len);
+}
+
 char	*ft_strchr_blank(const char *str, int c)
 {
     int i;
@@ -130,29 +174,52 @@ char	*ft_strchr_blank(const char *str, int c)
 	return (NULL);
 }
 
+int     valide_quote_check(char *str)
+{
+    char *pointer;
+    char *second_pointer;
+
+    pointer = ft_strchr((const char*)str, '\'');
+    second_pointer = ft_strchr((const char*)str, '\"');
+
+    if (pointer)
+    {
+        if (*(pointer - 1) != '\\')
+            return (1);
+    }
+    else if (second_pointer)
+    {
+        if (*(second_pointer - 1) != '\\')
+            return (1);
+    }
+    return (0);
+}
 
 char    valid_string_quot(char *str)
 {
     char *tmp;
     char ret;
 
-    if ((tmp = ft_strchr_blank((const char*)str, '\'')) != NULL && !ft_strchr_blank((const char*)str, '\"'))
+    ret = 0;
+    if (!*str || !str)
+        return (ret);
+    if ((tmp = ft_strchr_blank((const char*)str, '\'')) != NULL)
     {
         if (*(tmp - 1) != '\\')
             return (*(tmp));
         else if (*(tmp - 1) == '\\')
         {
-            if ((ret = valid_string_quot(tmp + 1)))
+            if ((ret = valid_string_quot(str + 1)))
                 return (ret);
         }
     }
-    if ((tmp = ft_strchr_blank((const char*)str, '\"')) != NULL)
+    else if ((tmp = ft_strchr_blank((const char*)str, '\"')) != NULL)
     {
         if (*(tmp - 1) != '\\')
             return (*(tmp));
         else if (*(tmp - 1) == '\\')
         {
-            if ((ret = valid_string_quot(tmp + 1)))
+            if ((ret = valid_string_quot(str + 1)))
                 return (ret);
         }
     }
@@ -213,6 +280,26 @@ char *sub_aggr_sym(char *str)
     return (ret);
 }
 
+char    *get_left_fd_(char *buf)
+{
+    int len;
+    int i;
+    char *ret;
+
+    len = 0;
+    while (ft_isdigit(buf[len]))
+        len++;
+    if (!len || !(ret = ft_strnew(len + 1)))
+        return (NULL);
+    i = 0;
+    while (buf[i] && len)
+    {
+        ret[i] = buf[i];
+        i++;
+        len--;
+    }
+    return (ret);
+}
 
 int check_command_redir(t_lexer **head, char *buf, t_pointt *cor)
 {
@@ -327,6 +414,38 @@ char    *get_right_redir(char *str)
     return (ret);
 }
 
+int ft_is_aggr(char c)
+{
+    if (c == '>' || c == '<')
+        return (1);
+    return (0);
+}
 
+int check_if_is_aggr(t_lexer **root) // this function is the problem!!
+{
+    t_lexer *cur;
 
+    if (root)
+    {
+        cur = *root;
+        while (cur->next)
+            cur = cur->next;
+        if (cur->type == AGGR_SYM)
+            return (1);        
+    }
+    return (0);
+}
 
+t_lexer *get_last_node(t_lexer **head)
+{
+    t_lexer *current;
+
+    current = NULL;
+    if (head && *head)
+    {
+        current = *head;
+        while (current->next)
+            current = current->next;
+    }
+    return (current);
+}

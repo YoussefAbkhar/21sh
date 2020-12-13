@@ -6,7 +6,7 @@
 /*   By: macos <macos@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/21 23:59:46 by yabakhar          #+#    #+#             */
-/*   Updated: 2020/11/08 00:32:03 by macos            ###   ########.fr       */
+/*   Updated: 2020/12/08 16:19:03 by macos            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,9 +91,10 @@ char *ft_end(t_node **current, t_line *line)
 	line->r = HOME;
 	home_deep(line, (*current)->tmp);
 	ft_putendl((*current)->tmp);
-	tcgetattr(0, &config);
-	config.c_lflag &= (ECHO | ICANON);
-	tcsetattr(0, 0, &config);
+	// tcgetattr(0, &config);
+	// config.c_lflag |= (ECHO | ICANON);
+	// tcsetattr(0, 0, &config);
+	ft_unset_terminal();
 	return_line = ft_strdup((*current)->tmp);
 	ft_strdel(&(*current)->tmp);
 	free_history_node(history_head);

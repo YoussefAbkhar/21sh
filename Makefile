@@ -7,7 +7,7 @@ SRC_DIR_READLINE= ./SRC_HEAD/readline/
 OBJ_DIR_READLINE= ./obj_readline/
 OBJ_DIR_HEAD= ./obj_HEAD/
 
-FLAGS=  -Wall -Wextra -Werror
+FLAGS= -Wall -Wextra -Werror -g
 
 SRC_NAME= main.c \
 			envirement.c \
@@ -15,9 +15,23 @@ SRC_NAME= main.c \
 			node.c \
 			redirections.c \
 			utils.c \
+			utils2.c \
 			parse_pipe.c \
 			printing.c \
-			expansion.c
+			expansion.c \
+			split.c \
+			expand.c \
+			free1.c \
+			quote_completion.c \
+			here_doc.c \
+			ft_free.c \
+			ast.c \
+			check_grammar.c \
+			execute.c \
+			execute_cmd.c \
+			execute_pipes.c \
+			execute_builtins.c \
+			blt_echo.c \
 
 SRC_NAME2= ft_readline.c \
 			history.c \
