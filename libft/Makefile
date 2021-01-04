@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: macos <macos@student.42.fr>                +#+  +:+       +#+         #
+#    By: oelazzou <oelazzou@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/03/30 03:33:28 by oelazzou          #+#    #+#              #
-#    Updated: 2020/11/22 12:13:33 by macos            ###   ########.fr        #
+#    Updated: 2020/12/30 18:25:36 by oelazzou         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -81,18 +81,25 @@ FILE = ft_atoi.c \
 	   ft_putstr_w2space.c \
 	   ft_putnbr_wspace.c \
 	   ft_strrchr_path.c \
+	   ft_strlen_delim.c \
+	   ft_putstr_c_str.c \
 	   is_blank.c \
+	   ft_strchr_no_blanks.c \
 	   free_two_dim.c \
 	   ft_print_until.c \
 	   ft_strjoin_four.c \
-	   get_next_line.c
+	   get_next_line.c \
+	   ft_strdel_2.c \
+	   ft_putendl_fd_int.c \
+	   ft_freejoin.c 
 FLAGS = -Wall -Wextra -Werror
 OBJ = $(FILE:.c=.o)
 
-$(NAME): 
-	gcc $(FLAGS) -c $(FILE) 
-	ar rc $(NAME) $(OBJ)
-	ranlib $(NAME)
+$(NAME): $(OBJ) libft.h
+	@gcc $(FLAGS) -c $(FILE) 
+	@ar rc $(NAME) $(OBJ)
+	@ranlib $(NAME)
+
 all : $(NAME)
 clean :
 	rm -f $(OBJ) *.o
